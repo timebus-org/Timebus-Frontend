@@ -1,0 +1,239 @@
+<div class="deck">
+  <div class="deck-label">Seat Layout</div>
+  <div class="seat-grid" style="grid-template-columns: repeat(5, 70px) 40px repeat(4, 70px);">
+    <!-- Left block seats -->
+    <div class="seat" data-seat="A1"><div class="seat-no">A1</div><div class="price">₹500</div></div>
+    <div class="seat" data-seat="A2"><div class="seat-no">A2</div><div class="price">₹500</div></div>
+    <div class="seat" data-seat="A3"><div class="seat-no">A3</div><div class="price">₹500</div></div>
+    <div class="seat" data-seat="A4"><div class="seat-no">A4</div><div class="price">₹500</div></div>
+    <div class="seat" data-seat="A5"><div class="seat-no">A5</div><div class="price">₹500</div></div>
+    
+    <!-- Aisle gap -->
+    <div class="gap"></div>
+    
+    <!-- Right block seats -->
+    <div class="seat" data-seat="B1"><div class="seat-no">B1</div><div class="price">₹500</div></div>
+    <div class="seat" data-seat="B2"><div class="seat-no">B2</div><div class="price">₹500</div></div>
+    <div class="seat" data-seat="B3"><div class="seat-no">B3</div><div class="price">₹500</div></div>
+    <div class="seat" data-seat="B4"><div class="seat-no">B4</div><div class="price">₹500</div></div>
+    
+    <!-- Next row - sleeper seats -->
+    <div class="seat sleeper" data-seat="S1"><div class="seat-no">S1</div><div class="price">₹700</div></div>
+    <div class="seat sleeper" data-seat="S2"><div class="seat-no">S2</div><div class="price">₹700</div></div>
+    <div class="seat sleeper" data-seat="S3"><div class="seat-no">S3</div><div class="price">₹700</div></div>
+    <div class="gap"></div>
+    <div class="seat sleeper" data-seat="S4"><div class="seat-no">S4</div><div class="price">₹700</div></div>
+    <div class="seat sleeper" data-seat="S5"><div class="seat-no">S5</div><div class="price">₹700</div></div>
+  </div>
+
+  <button id="bookNow" style="margin-top:15px; padding: 10px 20px; border:none; background:#1976d2; color:#fff; border-radius: 6px; cursor:pointer;">Book Now</button>
+</div>
+
+<script>
+  const seats = document.querySelectorAll('.seat:not(.booked)');
+  let selectedSeat = null;
+
+  seats.forEach(seat => {
+    seat.addEventListener('click', () => {
+      // Deselect previous
+      if (selectedSeat) selectedSeat.classList.remove('selected');
+
+      // Select new
+      seat.classList.add('selected');
+      selectedSeat = seat;
+    });
+  });
+
+  document.getElementById('bookNow').addEventListener('click', () => {
+    if (!selectedSeat) {
+      alert('Please select a seat first.');
+      return;
+    }
+    const seatNo = selectedSeat.getAttribute('data-seat');
+    // Redirect to passenger info page with seat query param
+    window.location.href = `/passenger-info?seat=${seatNo}`;
+  });
+</script>
+
+<style>
+  .deck {
+    border: 1px solid #ddd;
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+  }
+
+  .deck-label {
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+  }
+
+  .seat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 70px) 40px repeat(4, 70px);
+  gap: 10px;
+  align-items: center;
+  grid-auto-flow: row;
+}
+
+
+  /* Grid columns updated inline for aisle */
+  .seat {
+    width: 70px;
+    height: 40px;
+    border-radius: 12px; /* More rounded for sofa look */
+    background: linear-gradient(145deg, #e0e0e0, #c2c2c2);
+    box-shadow: inset 2px 2px 5px #ffffff, inset -2px -2px 5px #a3a3a3;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  /* Sleeper seat occupies 2 columns */
+.seat.sleeper {
+  grid-column: span 2;
+  height: 38px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #e0d7d2, #bcaaa4);
+  box-shadow:
+    inset 1px 1px 3px rgba(255,255,255,0.7),
+    inset -1px -1px 3px rgba(0,0,0,0.25);
+}
+
+
+  .seat.booked {
+    background: #c62828;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .seat.selected {
+    background: #1976d2;
+    box-shadow: 0 0 10px 2px #1565c0;
+  }
+
+  .seat-no {
+    font-size: 12px;
+    font-weight: 600;
+    position: absolute;
+    left: 6px;
+    top: 4px;
+    color: #333;
+    user-select: none;
+  }
+
+  .price {
+    font-size: 11px;
+    position: absolute;
+    bottom: 4px;
+    right: 6px;
+    color: #555;
+    user-select: none;
+  }
+
+  .gap {
+    width: 40px;
+    height: 35px;
+  }
+
+  .summary {
+    margin-top: 10px;
+    font-weight: 600;
+  }
+/* Container */
+.deck {
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+/* Heading */
+.deck-label {
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #374151;
+}
+
+/* Seat grid */
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 70px) 40px repeat(4, 70px);
+  gap: 10px;
+  align-items: center;
+}
+
+/* Base seat */
+.seat {
+  width: 70px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #f1f5f9, #d1d5db);
+  box-shadow:
+    inset 2px 2px 4px rgba(255,255,255,0.8),
+    inset -2px -2px 4px rgba(0,0,0,0.15);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Hover */
+.seat:hover:not(.booked):not(.selected) {
+  background: #e3f2fd;
+}
+
+/* Sleeper seat */
+.seat.sleeper {
+  width: 90px;
+  height: 38px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #e0d7d2, #bcaaa4);
+  box-shadow:
+    inset 1px 1px 3px rgba(255,255,255,0.7),
+    inset -1px -1px 3px rgba(0,0,0,0.25);
+}
+
+/* Booked */
+.seat.booked {
+  background: #c62828;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Selected */
+.seat.selected {
+  background: #1976d2;
+  box-shadow: 0 0 10px rgba(25,118,210,0.7);
+}
+
+/* Seat number */
+.seat-no {
+  font-size: 12px;
+  font-weight: 600;
+  position: absolute;
+  left: 6px;
+  top: 4px;
+  color: #1f2937;
+  user-select: none;
+}
+
+/* Price */
+.price {
+  font-size: 11px;
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  color: #2e7d32;
+  font-weight: 700;
+  user-select: none;
+}
+
+/* Aisle gap */
+.gap {
+  width: 40px;
+  height: 40px;
+}
+
+</style>

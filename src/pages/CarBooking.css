@@ -1,0 +1,373 @@
+/* ================= GLOBAL BACKGROUND ================= */
+.booking-bg {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #e8f0ff 0%, #dbe7ff 50%, #cddcff 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  font-family: "Inter", sans-serif;
+}
+
+/* ================= MAIN CARD ================= */
+.booking-card {
+  width: 95%;
+  max-width: 1200px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  display: flex;
+  border-radius: 22px;
+  box-shadow: 0 20px 50px rgba(13, 110, 253, 0.15);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.booking-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 70px rgba(13, 110, 253, 0.25);
+}
+
+/* ================= LEFT PANEL ================= */
+.booking-left {
+  flex: 1.2;
+  padding: 35px 38px;
+  background: linear-gradient(180deg, #f7faff 0%, #edf4ff 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.booking-left h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0a1f44;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ================= PREMIUM TRIP TOGGLE ================= */
+.trip-toggle {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 26px;
+  background: #eaf2ff;
+  padding: 6px;
+  border-radius: 999px;
+}
+
+.trip-toggle button {
+  flex: 1;
+  padding: 14px 0;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  color: #0a1f44;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  transition: all 0.35s ease;
+}
+
+/* Hover polish */
+.trip-toggle button:hover {
+  color: #0d6efd;
+}
+
+/* ACTIVE STATE — BEAUTIFUL */
+.trip-toggle button.active {
+  background: linear-gradient(135deg, #0d6efd, #084298);
+  color: #ffffff;
+  box-shadow:
+    0 8px 24px rgba(13, 110, 253, 0.45),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  transform: scale(1.02);
+}
+
+/* Glow ring */
+.trip-toggle button.active::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #7fb0ff, #0d6efd);
+  z-index: -1;
+  opacity: 0.55;
+  filter: blur(8px);
+}
+
+
+/* ================= INPUT FIELDS ================= */
+.input-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  padding: 14px 16px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  border: 2px solid #dbe7ff;
+  transition: all 0.25s ease;
+}
+
+.input-box:hover {
+  border-color: #0d6efd;
+}
+
+.input-box:focus-within {
+  border-color: #0d6efd;
+  box-shadow: 0 12px 28px rgba(13, 110, 253, 0.22);
+}
+
+.input-box svg {
+  color: #0d6efd;
+  font-size: 18px;
+}
+
+/* Input & Select */
+.input-box input,
+.input-box select {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0a1f44;
+}
+
+.input-box input::placeholder {
+  color: #7c8db0;
+  font-weight: 500;
+}
+
+/* ================= DATE INPUT ================= */
+.date-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0a1f44;
+}
+
+/* ================= SEARCH BUTTON ================= */
+.search-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(135deg, #0d6efd, #084298);
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 16px 36px rgba(13, 110, 253, 0.45);
+  transition: all 0.25s ease;
+}
+
+.search-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 46px rgba(13, 110, 253, 0.6);
+}
+
+.search-btn:active {
+  transform: scale(0.98);
+}
+
+/* ================= RIGHT PANEL ================= */
+.booking-right {
+  flex: 1;
+  background: linear-gradient(135deg, #0d6efd, #0a58ca);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.booking-right::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(255,255,255,0.2), transparent 70%);
+}
+
+.booking-right img {
+  width: 85%;
+  max-width: 380px;
+  z-index: 1;
+  animation: float 3.5s ease-in-out infinite;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.35));
+}
+
+/* ================= FLOAT ANIMATION ================= */
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+/* ================= FLATPICKR FIX ================= */
+.flatpickr-calendar {
+  z-index: 9999 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .booking-card {
+    flex-direction: column;
+  }
+
+  .booking-right {
+    padding: 25px 0;
+  }
+
+  .booking-right img {
+    width: 65%;
+  }
+
+  .booking-left {
+    padding: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .booking-left h2 {
+    font-size: 22px;
+  }
+
+  .search-btn {
+    font-size: 15px;
+  }
+}
+/* ================= TIME INPUT MATCH DATE ================= */
+.input-box input[type="time"] {
+  width: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0a1f44;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Chrome / Edge / Safari clock icon */
+.input-box input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(28%) sepia(96%) saturate(3035%) hue-rotate(210deg);
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+/* Firefox */
+.input-box input[type="time"] {
+  appearance: none;
+}
+
+/* Hover + focus consistency */
+.input-box input[type="time"]:focus {
+  outline: none;
+}
+/* ================= CLICK ANYWHERE TO OPEN TIME PICKER ================= */
+
+/* Make the input stretch and capture all clicks */
+.input-box {
+  position: relative;
+}
+
+/* Time input covers entire box */
+.input-box input[type="time"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding-left: 46px; /* space for icon */
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  z-index: 2;
+}
+
+/* Keep icon visible */
+.input-box svg {
+  position: relative;
+  z-index: 3;
+  pointer-events: none; /* clicks pass through */
+}
+
+/* Hide native input chrome spacing issues */
+.input-box input[type="time"]::-webkit-datetime-edit {
+  padding: 0;
+}
+
+/* Calendar / clock icon styling */
+.input-box input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 16px;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Firefox */
+.input-box input[type="time"] {
+  appearance: none;
+}
+/* ================= TOGGLE TEXT COLOR FIX ================= */
+
+/* Default (inactive) — BLACK text */
+.trip-toggle button {
+  color: #000000; /* pure black */
+}
+
+/* Hover — slight blue hint */
+.trip-toggle button:hover {
+  color: #0d6efd;
+}
+
+/* Active — white text on blue */
+.trip-toggle button.active {
+  color: #ffffff;
+}
+/* ================= PERMANENT BLUE TOGGLE BAR ================= */
+
+/* Toggle container always blue */
+.trip-toggle {
+  background: linear-gradient(135deg, #e3edff, #d4e3ff);
+  border-radius: 999px;
+  padding: 6px;
+}
+
+/* Inactive buttons — black text, no hover color change */
+.trip-toggle button {
+  background: transparent;
+  color: #000000;
+  font-weight: 800;
+  transition: none; /* remove hover flicker */
+}
+
+/* Disable hover color change */
+.trip-toggle button:hover {
+  color: #000000;
+}
+
+/* Active button — strong blue */
+.trip-toggle button.active {
+  background: linear-gradient(135deg, #0d6efd, #084298);
+  color: #ffffff;
+  box-shadow:
+    0 8px 22px rgba(13, 110, 253, 0.45);
+}
+
+/* Remove glow animation if present */
+.trip-toggle button.active::after {
+  display: none;
+}
