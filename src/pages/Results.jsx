@@ -72,23 +72,25 @@ export default function Results() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchBuses = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:5000/api/buses/search?${params.toString()}`
-        );
-        setBuses(res.data);
-        setFilteredBuses(res.data);
-      } catch {
-        setBuses([]);
-        setFilteredBuses([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchBuses = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/buses/search?${params.toString()}`
+      );
+      setBuses(res.data);
+      setFilteredBuses(res.data);
+    } catch (err) {
+      console.error("Fetch buses error:", err);
+      setBuses([]);
+      setFilteredBuses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchBuses();
-  }, [search]);
+  fetchBuses();
+}, [params]);
+
 
   if (loading) {
     return <div style={{ padding: 40, textAlign: "center" }}>Loading buses…</div>;
@@ -224,3 +226,4 @@ export default function Results() {
     </div>
   );
 }
+
