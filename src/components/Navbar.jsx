@@ -167,47 +167,37 @@ export default function Navbar() {
       {/* Add the mobile CSS here or in your global CSS file */}
       <style>{`
 @media (max-width: 600px) {
-
-  /* Navbar becomes 2-row container */
+  /* Navbar */
   .navBar {
-    flex-direction: column !important;
-    height: auto !important;
-    padding: 8px 12px 10px !important;
+    flex-direction: row !important;
+    height: 64px !important;
+    padding: 0 14px !important;
+    align-items: center !important;
     background: #ffffff !important;
     border-bottom: 1px solid #e6eaf0 !important;
   }
 
-  /* TOP ROW */
+  /* Left side */
   .leftWrap {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0 !important;
+    flex: 1;
+    gap: 16px !important;
+    align-items: center !important;
   }
 
-  /* Keep logo left */
-  .leftWrap a img {
-    height: 40px !important;
-  }
-
-  /* Move tabs to bottom */
+  /* Tabs near logo */
   .tabGroup {
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid #eef2f7;
+    gap: 18px !important;
+    align-items: center !important;
+    height: auto !important;
   }
 
   .tabItem {
-    flex-direction: column !important;
-    gap: 4px !important;
+    flex-direction: row !important;
+    gap: 6px !important;
     font-size: 14px !important;
     font-weight: 700 !important;
-    color: #1f2937 !important;
+    color: #1f2937 !important; /* SAME as desktop */
+    height: auto !important;
   }
 
   .tabIcon {
@@ -215,38 +205,39 @@ export default function Navbar() {
     height: 18px !important;
   }
 
-  /* RIGHT SIDE → hamburger only */
+  /* Right side (hamburger) */
   .rightWrap {
-    position: absolute;
-    top: 10px;
-    right: 12px;
+    flex: 0;
+    align-items: center !important;
   }
 
-  /* Hide Help & Print */
+  /* Hide Help & Print (mobile UX) */
   .rightWrap > a {
     display: none !important;
   }
 
-  /* Account button stays branded */
+  /* Account → Hamburger (keep brand color) */
   .rightWrap > div > div {
     background: #e3f2fd !important;
     color: #0d47a1 !important;
     padding: 6px 10px !important;
     border-radius: 6px !important;
+    font-weight: 600 !important;
   }
 
-  /* Hide account text */
+  /* Hide text, keep icon */
   .hide-sm {
     display: none !important;
   }
 
-  /* Dropdown alignment */
+  /* Dropdown position */
   .rightWrap > div > div + div {
-    top: 44px !important;
+    top: 46px !important;
     right: 0 !important;
     width: 220px !important;
   }
 }
+
 
       `}</style>
     </>
@@ -337,6 +328,7 @@ const rightWrap = {
   gap: "22px",
   position: "relative",
 };
+
 
 
 
