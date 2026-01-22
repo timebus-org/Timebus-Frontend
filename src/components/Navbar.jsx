@@ -167,35 +167,31 @@ export default function Navbar() {
       {/* Add the mobile CSS here or in your global CSS file */}
       <style>{`
 @media (max-width: 600px) {
+  /* Navbar stays single row */
   .navBar {
-    flex-direction: column !important;
-    height: auto !important;
-    padding: 12px 14px !important;
-    align-items: stretch !important;
-    gap: 10px;
+    flex-direction: row !important;
+    height: 60px !important;
+    padding: 0 12px !important;
+    align-items: center !important;
   }
 
-  /* Top row: logo */
+  /* Left section */
   .leftWrap {
-    width: 100%;
-    justify-content: center;
-    gap: 16px !important;
-    flex-wrap: wrap;
+    flex: 1;
+    gap: 14px !important;
   }
 
-  /* Tabs row */
+  /* Tabs move near logo */
   .tabGroup {
-    width: 100%;
-    justify-content: space-around !important;
-    gap: 0 !important;
-    border-top: 1px solid #eef2f7;
-    padding-top: 10px;
+    gap: 16px !important;
+    align-items: center !important;
   }
 
   .tabItem {
+    flex-direction: row !important;
+    gap: 6px;
     font-size: 14px !important;
-    padding: 10px 12px !important;
-    min-width: 80px;
+    height: auto !important;
   }
 
   .tabIcon {
@@ -203,27 +199,34 @@ export default function Navbar() {
     height: 18px !important;
   }
 
-  /* Bottom actions row */
+  /* Right section becomes hamburger */
   .rightWrap {
-    width: 100%;
-    justify-content: space-around !important;
-    gap: 12px !important;
-    margin-top: 6px;
-    flex-wrap: nowrap;
+    flex: 0;
+    gap: 0 !important;
   }
 
-  /* Make icons easier to tap */
-  .rightWrap a,
-  .rightWrap div {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  /* Hide Help & Print links (they go into dropdown UX-wise) */
+  .rightWrap > a {
+    display: none !important;
   }
 
-  /* Hide text where needed */
+  /* Account button becomes hamburger */
+  .rightWrap > div > div {
+    background: transparent !important;
+    padding: 6px !important;
+    color: #1f2937 !important;
+  }
+
+  /* Hide text, keep icon */
   .hide-sm {
     display: none !important;
+  }
+
+  /* Dropdown full mobile friendly */
+  .rightWrap > div > div + div {
+    right: 0 !important;
+    top: 42px !important;
+    width: 220px;
   }
 }
 
@@ -316,5 +319,6 @@ const rightWrap = {
   gap: "22px",
   position: "relative",
 };
+
 
 
