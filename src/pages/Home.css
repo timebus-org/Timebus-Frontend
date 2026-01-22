@@ -1,67 +1,187 @@
-/* ================= HERO MOBILE RESPONSIVE ================= */
+/* ================= GLOBAL FIX ================= */
+html,
+body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+}
+
+/* ================= HERO SECTION ================= */
+.hero {
+  min-height: 92vh;
+  background: #000080;
+  display: flex;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+/* GRID */
+.heroGrid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 24px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: center;
+}
+
+/* LEFT CONTAINER */
+.hero h1 {
+  color: #ffffff;
+  font-size: 42px;
+  margin-bottom: 32px;
+}
+
+/* SEARCH CARD */
+.searchCard {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+}
+
+/* SEARCH ROW */
+.searchRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* FIELD */
+.searchRow > div {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #eff6ff;
+  padding: 14px 16px;
+  border-radius: 12px;
+  position: relative;
+  min-width: 180px;
+}
+
+/* INPUT */
+.searchRow input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 14px;
+}
+
+/* ICONS */
+.searchRow svg {
+  color: #2563eb;
+}
+
+/* SWAP BUTTON */
+.swapBtn {
+  height: 44px;
+  width: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* DROPDOWN */
+.dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+/* SEARCH BUTTON */
+.searchRow button {
+  background: #2563eb;
+  color: #ffffff;
+  padding: 14px 28px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+}
+
+/* RIGHT IMAGE */
+.heroImage {
+  min-height: 320px;
+  border-radius: 25px;
+  background-size: cover;
+  background-position: center;
+}
+
+/* ================= MOBILE RESPONSIVE ================= */
 @media (max-width: 768px) {
 
-  /* HERO SECTION */
+  /* HERO */
   .hero {
-    min-height: auto !important;
-    padding: 0 !important; /* ❗ prevent double padding */
+    min-height: auto;
+    padding: 0;
   }
 
-  /* HERO GRID STACK */
+  /* GRID STACK */
   .heroGrid {
-    grid-template-columns: 1fr !important;
-    gap: 24px !important;
-    align-items: start !important;
-    padding: 40px 16px !important;
+    grid-template-columns: 1fr;
+    padding: 40px 16px;
+    gap: 24px;
   }
 
-  /* HEADING */
+  /* TITLE */
   .hero h1 {
-    font-size: 28px !important;
+    font-size: 28px;
     text-align: center;
-    margin-bottom: 20px !important;
+    margin-bottom: 20px;
   }
 
-  /* SEARCH FORM STACK */
+  /* STACK FORM */
   .searchRow {
-    flex-direction: column !important;
-    gap: 12px !important;
+    flex-direction: column;
+    gap: 12px;
   }
 
-  /* FORM FIELDS */
+  /* FULL WIDTH FIELDS */
   .searchRow > div {
-    width: 100% !important;
-    min-width: unset !important;
+    width: 100%;
+    min-width: unset;
   }
 
-  /* SWAP BUTTON */
+  /* HIDE SWAP */
   .swapBtn {
-    display: none !important;
+    display: none;
   }
 
-  /* SEARCH BUTTON FULL WIDTH */
-  .searchRow > button,
-  .searchRow > div:last-child button {
-    width: 100% !important;
-    justify-content: center;
-    padding: 14px 0 !important;
-  }
-
-  /* INPUT ICON SPACING */
-  .searchRow svg {
-    margin-right: 8px !important;
-  }
-
-  /* DATE BUTTONS (Today / Tomorrow) */
+  /* FULL WIDTH SEARCH BUTTON */
   .searchRow button {
-    flex: 1 !important;
+    width: 100%;
+    justify-content: center;
+    padding: 14px 0;
   }
 
-  /* HERO IMAGE */
+  /* DATE BUTTONS */
+  .searchRow button {
+    flex: 1;
+  }
+
+  /* REMOVE IMAGE COMPLETELY */
   .heroImage {
-    min-height: 220px !important;
-    width: 100% !important;
-    margin-top: 24px !important;
-    border-radius: 16px !important;
+    display: none;
   }
 }
