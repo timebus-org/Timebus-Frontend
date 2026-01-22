@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaUsers, FaSnowflake } from "react-icons/fa";
+import { supabase } from "../lib/supabase"; // ✅ Make sure this is imported
 import "./carSearchResults.css";
 
 const allCabs = [
@@ -78,18 +79,34 @@ export default function CarSearchResults() {
     return true;
   });
 
+  // 🔹 BOOK NOW wrapper to handle async
+  const handleBookWrapper = (cab) => {
+    handleBook(cab).catch((err) => console.error(err));
+  };
+
   // 🔹 Handle booking redirect
-  const handleBook = (cab) => {
-    navigate("/bookingSummary", {
-      state: {
-        cab,
-        selectedPackage: cab.packages[tripType],
-        tripType,
-        from,
-        to,
-        date,
-      },
-    });
+  const handleBook = async (cab) => {
+    const cabData = {
+      cab,
+      selectedPackage: cab.packages[tripType],
+      tripType,
+      from,
+      to,
+      date,
+    };
+
+    // 🔹 Get current session directly from Supabase
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      // Not logged in → redirect to login with preserved cab data
+      navigate("/login", {
+        state: { redirectTo: "/bookingSummary", cabData },
+      });
+    } else {
+      // Logged in → go directly to booking summary
+      navigate("/bookingSummary", { state: cabData });
+    }
   };
 
   return (
@@ -100,8 +117,7 @@ export default function CarSearchResults() {
           <h3>{from} → {to}</h3>
           <p>{date} • {tripType === "local" ? "Local Trip" : "Outstation Trip"}</p>
         </div>
-
-              </div>
+      </div>
 
       <div className="results-container">
         {/* FILTERS */}
@@ -144,12 +160,12 @@ export default function CarSearchResults() {
                 <img src={cab.image} alt={cab.name} className="cab-img" />
 
                 <div className="cab-info">
-                  <h4>{cab.name} / AC</h4>
+                  <h4>{cab.name} / {cab.ac ? "AC" : "Non-AC"}</h4>
                   <p>{cab.desc}</p>
 
                   <div className="cab-meta">
                     <span><FaUsers /> {cab.seats} Seats</span>
-                    <span><FaSnowflake /> AC</span>
+                    {cab.ac && <span><FaSnowflake /> AC</span>}
                   </div>
 
                   <h5 className="package-title">
@@ -179,8 +195,8 @@ export default function CarSearchResults() {
                     {tripType === "local" ? "pkg" : "km"}
                   </h3>
 
-                  {/* ✅ BOOK NOW BUTTON WORKING */}
-                  <button onClick={() => handleBook(cab)}>BOOK NOW</button>
+                  {/* ✅ BOOK NOW BUTTON */}
+                  <button onClick={() => handleBookWrapper(cab)}>BOOK NOW</button>
                 </div>
               </div>
             );
