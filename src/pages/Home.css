@@ -1,73 +1,78 @@
-/* ================= MOBILE AUTO-FIT HERO ================= */
+/* ================= NEXT MOBILE UX UPGRADE ================= */
 @media (max-width: 768px) {
 
-  /* Global safety */
+  /* SAFETY */
   html, body {
     width: 100%;
     overflow-x: hidden;
   }
 
-  /* Hero must grow/shrink naturally */
+  /* HERO AS MOBILE CONTAINER */
   .hero {
-    min-height: unset !important;
     height: auto !important;
-    padding: 0 !important;
-    overflow-x: hidden !important;
+    min-height: unset !important;
+    padding: clamp(16px, 4vw, 24px) !important;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    box-sizing: border-box;
   }
 
-  /* Stack layout */
+  /* HERO GRID – SINGLE COLUMN */
   .heroGrid {
     grid-template-columns: 1fr !important;
-    width: 100% !important;
-    padding: 24px 14px !important;
-    gap: 16px !important;
-    box-sizing: border-box;
+    width: 100%;
+    max-width: 520px; /* 👈 keeps box perfectly centered */
+    padding: 0 !important;
+    margin: 0 auto !important;
+    gap: clamp(14px, 3vw, 20px) !important;
   }
 
-  /* Heading scales automatically */
+  /* HEADING – RESPONSIVE SCALE */
   .hero h1 {
-    font-size: clamp(22px, 6vw, 28px) !important;
+    font-size: clamp(22px, 5.8vw, 28px) !important;
     line-height: 1.25 !important;
     text-align: center;
-    margin-bottom: 16px !important;
+    margin-bottom: 12px !important;
   }
 
-  /* Search card auto-fit */
+  /* SEARCH CARD – EMBEDDED FEEL */
   .searchCard {
     width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 auto !important;
+    padding: clamp(14px, 4vw, 20px) !important;
+    border-radius: 18px !important;
     box-sizing: border-box;
   }
 
-  /* Stack inputs */
+  /* STACK FORM */
   .searchRow {
     flex-direction: column !important;
     gap: 12px !important;
-    width: 100%;
   }
 
-  /* Inputs full width */
+  /* INPUT FIELDS */
   .searchRow > div {
     width: 100% !important;
     min-width: 0 !important;
     box-sizing: border-box;
   }
 
-  /* Hide swap safely */
+  /* HIDE SWAP (MOBILE UX) */
   .swapBtn {
     display: none !important;
   }
 
-  /* Buttons adapt */
-  .searchRow button {
+  /* SEARCH CTA – PRIMARY ACTION */
+  .searchRow > button,
+  .searchRow > div:last-child button {
     width: 100% !important;
-    max-width: 100% !important;
-    justify-content: center;
     padding: 14px 0 !important;
+    font-size: 16px !important;
+    border-radius: 14px !important;
+    justify-content: center;
   }
 
-  /* Remove image completely */
+  /* REMOVE HERO IMAGE */
   .heroImage {
     display: none !important;
   }
