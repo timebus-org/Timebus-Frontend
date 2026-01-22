@@ -1,55 +1,66 @@
+/* ================= HERO MOBILE RESPONSIVE ================= */
 @media (max-width: 768px) {
-
-  /* HERO */
+  /* HERO SECTION */
   .hero {
     min-height: auto !important;
-    padding-bottom: 40px;
+    padding: 40px 16px !important;
   }
 
-  /* GRID → STACK */
+  /* HERO GRID STACK */
   .heroGrid {
-    grid-template-columns: 1fr !important;
-    padding: 40px 16px !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important; /* stack vertically */
+    gap: 24px !important;
+    align-items: start !important;
+    padding: 24px 16px !important;
   }
 
   /* HEADING */
   .hero h1 {
     font-size: 28px !important;
     text-align: center;
+    margin-bottom: 20px !important;
   }
 
   /* SEARCH CARD */
   .searchRow {
-    gap: 10px !important;
+    flex-direction: column !important;
+    gap: 12px !important;
   }
 
   /* FORM FIELDS */
   .searchRow > div {
-    min-width: 100% !important;
+    width: 100% !important;
+    min-width: unset !important;
   }
 
-  /* SWAP BUTTON CENTER */
-  .searchRow button {
-    margin: 0 auto;
+  /* SWAP BUTTON */
+  .swapBtn {
+    display: none !important;
   }
 
   /* SEARCH BUTTON FULL WIDTH */
   .searchRow > button:last-child {
-    width: 100%;
+    width: 100% !important;
     justify-content: center;
+    padding: 14px 0 !important;
   }
 
-  /* IMAGE BELOW FORM */
+  /* INPUT ICONS */
+  .searchRow div svg {
+    margin-right: 8px !important; /* spacing for icons in inputs */
+  }
+
+  /* DATE BUTTONS */
+  .searchRow div > div > div button {
+    flex: 1 !important;
+  }
+
+  /* HERO IMAGE BELOW FORM */
   .heroImage {
     min-height: 220px !important;
-    margin-top: 24px;
+    width: 100% !important;
+    margin-top: 24px !important;
+    border-radius: 16px !important;
   }
-
-  @media (max-width: 768px) {
-  .swapBtn {
-    display: none !important;
-  }
-}
-
-
 }
