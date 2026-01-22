@@ -1,70 +1,73 @@
-/* ================= MOBILE ONLY POLISH ================= */
+/* ================= MOBILE AUTO-FIT HERO ================= */
 @media (max-width: 768px) {
 
-  /* stop right-side bleed */
+  /* Global safety */
   html, body {
+    width: 100%;
     overflow-x: hidden;
   }
 
-  /* hero cleanup */
+  /* Hero must grow/shrink naturally */
   .hero {
-    min-height: auto !important;
+    min-height: unset !important;
+    height: auto !important;
+    padding: 0 !important;
     overflow-x: hidden !important;
   }
 
-  /* stack hero properly */
+  /* Stack layout */
   .heroGrid {
     grid-template-columns: 1fr !important;
-    padding: 32px 16px !important;
-    gap: 20px !important;
+    width: 100% !important;
+    padding: 24px 14px !important;
+    gap: 16px !important;
+    box-sizing: border-box;
   }
 
-  /* heading size */
+  /* Heading scales automatically */
   .hero h1 {
-    font-size: 28px !important;
+    font-size: clamp(22px, 6vw, 28px) !important;
+    line-height: 1.25 !important;
     text-align: center;
-    margin-bottom: 18px !important;
+    margin-bottom: 16px !important;
   }
 
-  /* search card centered */
+  /* Search card auto-fit */
   .searchCard {
     width: 100% !important;
+    max-width: 100% !important;
     margin: 0 auto !important;
-    border-radius: 18px !important;
+    box-sizing: border-box;
   }
 
-  /* stack fields */
+  /* Stack inputs */
   .searchRow {
     flex-direction: column !important;
     gap: 12px !important;
+    width: 100%;
   }
 
-  /* full width inputs */
+  /* Inputs full width */
   .searchRow > div {
     width: 100% !important;
-    min-width: unset !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
   }
 
-  /* hide swap on mobile */
+  /* Hide swap safely */
   .swapBtn {
     display: none !important;
   }
 
-  /* date buttons equal width */
+  /* Buttons adapt */
   .searchRow button {
-    flex: 1 !important;
-  }
-
-  /* search button polish */
-  .searchRow > button,
-  .searchRow > div:last-child button {
     width: 100% !important;
-    justify-content: center !important;
+    max-width: 100% !important;
+    justify-content: center;
     padding: 14px 0 !important;
-    border-radius: 14px !important;
   }
 
-  /* remove hero image */
+  /* Remove image completely */
   .heroImage {
     display: none !important;
   }
