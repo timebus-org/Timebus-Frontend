@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
 export default function Login() {
@@ -11,6 +11,53 @@ export default function Login() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // ✅ Grab redirect info from location OR localStorage
+  const redirectTo = location.state?.redirectTo || localStorage.getItem("redirectTo") || "/";
+  const cabData = location.state?.cabData
+    || JSON.parse(localStorage.getItem("cabData")) || null;
+
+  useEffect(() => {
+    // Store redirect info in localStorage to survive reloads
+    if (location.state?.redirectTo && location.state?.cabData) {
+      localStorage.setItem("redirectTo", location.state.redirectTo);
+      localStorage.setItem("cabData", JSON.stringify(location.state.cabData));
+    }
+  }, [location.state]);
+
+  /* 🔐 PASSWORD LOGIN */
+  const loginWithPassword = async (e) => {
+    e.preventDefault();
+    if (loading) return;
+
+    setLoading(true);
+    setError("");
+
+    const { data, error: loginError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    setLoading(false);
+
+    if (loginError) {
+      setError("Account not found. Please sign up.");
+      setTimeout(() => navigate("/signup"), 1200);
+      return;
+    }
+
+    // ✅ Clear redirect info from localStorage
+    localStorage.removeItem("redirectTo");
+    localStorage.removeItem("cabData");
+
+    // ✅ Navigate to bookingSummary if cabData exists
+    if (cabData) {
+      navigate(redirectTo, { state: cabData });
+    } else {
+      navigate(redirectTo);
+    }
+  };
 
   /* 🔐 MAGIC LINK LOGIN */
   const sendOtp = async (e) => {
@@ -23,7 +70,7 @@ export default function Login() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/`,
+        emailRedirectTo: `${window.location.origin}/loginCallback`, // handle redirect there
       },
     });
 
@@ -37,31 +84,6 @@ export default function Login() {
     setSent(true);
   };
 
-  /* 🔐 PASSWORD LOGIN */
-  const loginWithPassword = async (e) => {
-    e.preventDefault();
-    if (loading) return;
-
-    setLoading(true);
-    setError("");
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    setLoading(false);
-
-    if (error) {
-      setError("Account not found. Please sign up.");
-      setTimeout(() => navigate("/register"), 1200);
-      return;
-    }
-
-    navigate("/");
-  };
-
-  /* 📧 EMAIL PROVIDER DETECTION */
   const getEmailProviderUrl = () => {
     const domain = email.split("@")[1] || "";
     if (domain.includes("gmail")) return "https://mail.google.com";
@@ -146,7 +168,13 @@ export default function Login() {
 
         <p className="switch-auth">
           Don’t have an account?{" "}
-          <span onClick={() => navigate("/signup")}>Sign up</span>
+          <span
+            onClick={() =>
+              navigate("/signup", { state: { redirectTo, cabData } })
+            }
+          >
+            Sign up
+          </span>
         </p>
       </div>
     </div>
