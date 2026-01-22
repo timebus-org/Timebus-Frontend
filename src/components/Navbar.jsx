@@ -169,8 +169,8 @@ export default function Navbar() {
 @media (max-width: 600px) {
   /* Navbar */
   .navBar {
-    flex-direction: row !important;
-    height: 64px !important;
+    
+    height: auto !important;
     padding: 0 14px !important;
     align-items: center !important;
     background: #ffffff !important;
@@ -328,6 +328,7 @@ const rightWrap = {
   gap: "22px",
   position: "relative",
 };
+
 
 
 
