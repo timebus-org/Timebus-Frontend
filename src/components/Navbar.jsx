@@ -167,31 +167,47 @@ export default function Navbar() {
       {/* Add the mobile CSS here or in your global CSS file */}
       <style>{`
 @media (max-width: 600px) {
-  /* Navbar stays single row */
+
+  /* Navbar becomes 2-row container */
   .navBar {
-    flex-direction: row !important;
-    height: 60px !important;
-    padding: 0 12px !important;
-    align-items: center !important;
+    flex-direction: column !important;
+    height: auto !important;
+    padding: 8px 12px 10px !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid #e6eaf0 !important;
   }
 
-  /* Left section */
+  /* TOP ROW */
   .leftWrap {
-    flex: 1;
-    gap: 14px !important;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0 !important;
   }
 
-  /* Tabs move near logo */
+  /* Keep logo left */
+  .leftWrap a img {
+    height: 40px !important;
+  }
+
+  /* Move tabs to bottom */
   .tabGroup {
-    gap: 16px !important;
-    align-items: center !important;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #eef2f7;
   }
 
   .tabItem {
-    flex-direction: row !important;
-    gap: 6px;
+    flex-direction: column !important;
+    gap: 4px !important;
     font-size: 14px !important;
-    height: auto !important;
+    font-weight: 700 !important;
+    color: #1f2937 !important;
   }
 
   .tabIcon {
@@ -199,34 +215,36 @@ export default function Navbar() {
     height: 18px !important;
   }
 
-  /* Right section becomes hamburger */
+  /* RIGHT SIDE → hamburger only */
   .rightWrap {
-    flex: 0;
-    gap: 0 !important;
+    position: absolute;
+    top: 10px;
+    right: 12px;
   }
 
-  /* Hide Help & Print links (they go into dropdown UX-wise) */
+  /* Hide Help & Print */
   .rightWrap > a {
     display: none !important;
   }
 
-  /* Account button becomes hamburger */
+  /* Account button stays branded */
   .rightWrap > div > div {
-    background: transparent !important;
-    padding: 6px !important;
-    color: #1f2937 !important;
+    background: #e3f2fd !important;
+    color: #0d47a1 !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
   }
 
-  /* Hide text, keep icon */
+  /* Hide account text */
   .hide-sm {
     display: none !important;
   }
 
-  /* Dropdown full mobile friendly */
+  /* Dropdown alignment */
   .rightWrap > div > div + div {
+    top: 44px !important;
     right: 0 !important;
-    top: 42px !important;
-    width: 220px;
+    width: 220px !important;
   }
 }
 
@@ -319,6 +337,7 @@ const rightWrap = {
   gap: "22px",
   position: "relative",
 };
+
 
 
 
