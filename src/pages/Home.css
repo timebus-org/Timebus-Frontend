@@ -1,0 +1,55 @@
+@media (max-width: 768px) {
+
+  /* HERO */
+  .hero {
+    min-height: auto !important;
+    padding-bottom: 40px;
+  }
+
+  /* GRID → STACK */
+  .heroGrid {
+    grid-template-columns: 1fr !important;
+    padding: 40px 16px !important;
+  }
+
+  /* HEADING */
+  .hero h1 {
+    font-size: 28px !important;
+    text-align: center;
+  }
+
+  /* SEARCH CARD */
+  .searchRow {
+    gap: 10px !important;
+  }
+
+  /* FORM FIELDS */
+  .searchRow > div {
+    min-width: 100% !important;
+  }
+
+  /* SWAP BUTTON CENTER */
+  .searchRow button {
+    margin: 0 auto;
+  }
+
+  /* SEARCH BUTTON FULL WIDTH */
+  .searchRow > button:last-child {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* IMAGE BELOW FORM */
+  .heroImage {
+    min-height: 220px !important;
+    margin-top: 24px;
+  }
+
+  @media (max-width: 768px) {
+  .swapBtn {
+    display: none !important;
+  }
+}
+
+
+}
