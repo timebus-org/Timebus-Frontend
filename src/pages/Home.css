@@ -1,65 +1,55 @@
-/* Mobile-first: small screens */
-.hero {
-  padding: 20px;
-  overflow-x: hidden;
-}
+@media (max-width: 768px) {
 
-.heroGrid {
-  display: grid;
-  grid-template-columns: 1fr; /* single column by default */
-  gap: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+  /* HERO */
+  .hero {
+    min-height: auto !important;
+    padding-bottom: 40px;
+  }
 
-.leftContainer {
-  width: 100%;
-}
-
-.searchCard {
-  width: 100%;
-  padding: 16px;
-  box-sizing: border-box;
-}
-
-.searchRow {
-  display: flex;
-  flex-direction: column; /* stack inputs on small screens */
-  gap: 12px;
-}
-
-.searchRow > div {
-  min-width: 100%;
-}
-
-.swapBtn {
-  display: none; /* hidden on small screens */
-}
-
-.searchRow > button:last-child {
-  width: 100%;
-  justify-content: center;
-}
-
-.heroImage {
-  width: 100%;
-  min-height: 200px;
-  border-radius: 20px;
-  background-size: cover;
-  background-position: center;
-}
-
-/* Medium and large screens (tablet+) */
-@media (min-width: 768px) {
+  /* GRID → STACK */
   .heroGrid {
-    grid-template-columns: 1.1fr 0.9fr; /* left + right */
+    grid-template-columns: 1fr !important;
+    padding: 40px 16px !important;
   }
 
+  /* HEADING */
+  .hero h1 {
+    font-size: 28px !important;
+    text-align: center;
+  }
+
+  /* SEARCH CARD */
   .searchRow {
-    flex-direction: row; /* inputs in a row */
+    gap: 10px !important;
   }
 
-  .swapBtn {
-    display: flex; /* show swap button on bigger screens */
+  /* FORM FIELDS */
+  .searchRow > div {
+    min-width: 100% !important;
   }
+
+  /* SWAP BUTTON CENTER */
+  .searchRow button {
+    margin: 0 auto;
+  }
+
+  /* SEARCH BUTTON FULL WIDTH */
+  .searchRow > button:last-child {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* IMAGE BELOW FORM */
+  .heroImage {
+    min-height: 220px !important;
+    margin-top: 24px;
+  }
+
+  @media (max-width: 768px) {
+  .swapBtn {
+    display: none !important;
+  }
+}
+
+
 }
