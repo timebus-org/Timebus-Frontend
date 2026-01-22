@@ -371,3 +371,68 @@
 .trip-toggle button.active::after {
   display: none;
 }
+.time-dropdown {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+}
+/* Compact input box */
+.input-box.small {
+  max-width: 160px;   /* 👈 small size */
+  padding: 8px 10px;
+}
+
+/* Small input & dropdown */
+.small-input {
+  width: 90px;        /* 👈 compact */
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  outline: none;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Dropdown arrow clean */
+.time-dropdown {
+  appearance: none;
+}
+/* Date + Time Row */
+.date-time-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Half width input boxes */
+.input-box.half {
+  flex: 1;
+  padding: 8px 10px;
+}
+
+/* Compact input */
+.small-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  outline: none;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Dropdown clean */
+.time-dropdown {
+  appearance: none;
+}
+
+/* Mobile stack */
+@media (max-width: 600px) {
+  .date-time-row {
+    flex-direction: column;
+  }
+}
