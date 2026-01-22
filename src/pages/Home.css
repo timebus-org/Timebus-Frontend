@@ -1,18 +1,18 @@
 /* ================= HERO MOBILE RESPONSIVE ================= */
 @media (max-width: 768px) {
+
   /* HERO SECTION */
   .hero {
     min-height: auto !important;
-    padding: 40px 16px !important;
+    padding: 0 !important; /* ❗ prevent double padding */
   }
 
   /* HERO GRID STACK */
   .heroGrid {
-    display: grid !important;
-    grid-template-columns: 1fr !important; /* stack vertically */
+    grid-template-columns: 1fr !important;
     gap: 24px !important;
     align-items: start !important;
-    padding: 24px 16px !important;
+    padding: 40px 16px !important;
   }
 
   /* HEADING */
@@ -22,7 +22,7 @@
     margin-bottom: 20px !important;
   }
 
-  /* SEARCH CARD */
+  /* SEARCH FORM STACK */
   .searchRow {
     flex-direction: column !important;
     gap: 12px !important;
@@ -40,23 +40,24 @@
   }
 
   /* SEARCH BUTTON FULL WIDTH */
-  .searchRow > button:last-child {
+  .searchRow > button,
+  .searchRow > div:last-child button {
     width: 100% !important;
     justify-content: center;
     padding: 14px 0 !important;
   }
 
-  /* INPUT ICONS */
-  .searchRow div svg {
-    margin-right: 8px !important; /* spacing for icons in inputs */
+  /* INPUT ICON SPACING */
+  .searchRow svg {
+    margin-right: 8px !important;
   }
 
-  /* DATE BUTTONS */
-  .searchRow div > div > div button {
+  /* DATE BUTTONS (Today / Tomorrow) */
+  .searchRow button {
     flex: 1 !important;
   }
 
-  /* HERO IMAGE BELOW FORM */
+  /* HERO IMAGE */
   .heroImage {
     min-height: 220px !important;
     width: 100% !important;
