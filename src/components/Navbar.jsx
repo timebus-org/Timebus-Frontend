@@ -1,6 +1,11 @@
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { FaUserCircle, FaPhoneAlt, FaClipboardList } from "react-icons/fa";
+import {
+  FaUserCircle,
+  FaPhoneAlt,
+  FaClipboardList,
+  FaBars,
+} from "react-icons/fa";
 import { supabase } from "../supabaseClient";
 
 import logo from "../assets/logo.png";
@@ -10,73 +15,94 @@ import cbIcon from "../assets/cab.png";
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
+
   const navigate = useNavigate();
-  const dropdownRef = useRef(null);
   const location = useLocation();
+
+  const desktopDropdownRef = useRef(null);
+  const mobileDropdownRef = useRef(null);
+
+  /* ================= AUTH ================= */
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_e, session) => {
-      setUser(session?.user ?? null);
-      setOpen(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const close = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_e, session) => {
+        setUser(session?.user ?? null);
         setOpen(false);
       }
-    };
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    );
+
+    return () => listener.subscription.unsubscribe();
   }, []);
+
+  /* ================= CLICK OUTSIDE ================= */
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (
+        desktopDropdownRef.current?.contains(e.target) ||
+        mobileDropdownRef.current?.contains(e.target)
+      ) {
+        return;
+      }
+      setOpen(false);
+    };
+
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, []);
+
+  /* ================= HELPERS ================= */
 
   const logout = async () => {
     await supabase.auth.signOut();
-    setOpen(false);
     navigate("/login");
   };
 
   const registeredName = user?.user_metadata?.full_name;
 
-  // Bus tab active on "/" or "/bus-tickets"
-  const isBusActive = location.pathname === "/" || location.pathname === "/bus-tickets";
+  const isBusActive =
+    location.pathname === "/" || location.pathname === "/bus-tickets";
 
-  // Styles function for NavLink active state
   const tabActive = ({ isActive }) => ({
     textDecoration: "none",
-    color: isBusActive && isActive ? "#1976d2" : isActive ? "#1976d2" : "#1f2937",
-    borderBottom: isBusActive && isActive ? "3px solid #1976d2" : isActive ? "3px solid #1976d2" : "3px solid transparent",
+    color:
+      isBusActive && isActive
+        ? "#1976d2"
+        : isActive
+        ? "#1976d2"
+        : "#1f2937",
+    borderBottom: isActive
+      ? "3px solid #1976d2"
+      : "3px solid transparent",
     paddingBottom: "6px",
-    transition: "all 0.25s ease",
   });
+
+  /* ================= RENDER ================= */
 
   return (
     <>
-      <nav style={navBar} className="navBar">
-        <div style={leftWrap} className="leftWrap">
+      <nav style={navBar}>
+        {/* LEFT */}
+        <div style={leftWrap}>
           <Link to="/">
-            <img src={logo} alt="Logo" style={{ height: "46px" }} />
+            <img src={logo} alt="Logo" style={{ height: 46 }} />
           </Link>
 
-          <div style={tabGroup} className="tabGroup">
-            <NavLink to="/bus-tickets" style={() => tabActive({ isActive: true })}>
-              <div style={tabItem} className="tabItem">
+          <div style={tabGroup}>
+            <NavLink to="/bus-tickets" style={tabActive}>
+              <div style={tabItem}>
                 <img src={busIcon} style={tabIcon} alt="Bus" />
                 <span>Bus</span>
               </div>
             </NavLink>
 
             <NavLink to="/CarBooking" style={tabActive}>
-              <div style={tabItem} className="tabItem">
+              <div style={tabItem}>
                 <img src={cbIcon} style={tabIcon} alt="Cabs" />
                 <span>Cabs</span>
               </div>
@@ -84,126 +110,92 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div style={rightWrap} className="rightWrap">
-          <Link to="/contact-us" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}>
-            <FaPhoneAlt /> <span className="hide-sm">Help</span>
+        {/* DESKTOP RIGHT */}
+        <div style={rightWrap} className="desktop-only">
+          <Link to="/contact-us" style={rightLink}>
+            <FaPhoneAlt /> Help
           </Link>
 
-          <Link to="/print-ticket" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}>
-            <FaClipboardList /> <span className="hide-sm">Print Ticket</span>
+          <Link to="/print-ticket" style={rightLink}>
+            <FaClipboardList /> Print Ticket
           </Link>
 
-          <div ref={dropdownRef} style={{ position: "relative" }}>
-            <div onClick={() => setOpen(!open)} style={accountBtn}>
+          <div ref={desktopDropdownRef} style={{ position: "relative" }}>
+            <div style={accountBtn} onClick={() => setOpen((o) => !o)}>
               <FaUserCircle size={20} />
-              <span className="hide-sm">
-                {registeredName ? `Hello, ${registeredName}` : "Account"}
-              </span>
-              <span style={{ marginLeft: 4 }}>▼</span>
+              {registeredName || "Account"} ▼
             </div>
 
-            <div
-              style={{
-                ...dropdown,
-                opacity: open ? 1 : 0,
-                transform: open ? "scale(1)" : "scale(0.95)",
-                pointerEvents: open ? "auto" : "none",
-              }}
-            >
+            {open && (
+              <div style={dropdown}>
+                {user ? (
+                  <>
+                    <div style={dropItem} onClick={() => navigate("/cancel-ticket")}>
+                      Cancel Ticket
+                    </div>
+                    <div
+                      style={dropItem}
+                      onClick={() => navigate("/reschedule-ticket")}
+                    >
+                      Reschedule Ticket
+                    </div>
+                    <div style={{ ...dropItem, color: "#d32f2f" }} onClick={logout}>
+                      Logout
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={dropItem} onClick={() => navigate("/login")}>
+                      Login
+                    </div>
+                    <div style={dropItem} onClick={() => navigate("/signup")}>
+                      Signup
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* MOBILE */}
+        <div ref={mobileDropdownRef} className="mobile-only">
+          <FaBars size={22} onClick={() => setOpen((o) => !o)} />
+
+          {open && (
+            <div style={dropdown}>
+              <div style={dropItem} onClick={() => navigate("/contact-us")}>
+                <FaPhoneAlt /> Help
+              </div>
+              <div style={dropItem} onClick={() => navigate("/print-ticket")}>
+                <FaClipboardList /> Print Ticket
+              </div>
+
               {user ? (
-                <>
-                  <div
-                    style={dropItem}
-                    onClick={() => {
-                      setOpen(false);
-                      navigate("/cancel-ticket");
-                    }}
-                  >
-                    Cancel Ticket
-                  </div>
-                  <div
-                    style={dropItem}
-                    onClick={() => {
-                      setOpen(false);
-                      navigate("/reschedule-ticket");
-                    }}
-                  >
-                    Reschedule Ticket
-                  </div>
-                  <div
-                    style={{ ...dropItem, color: "#d32f2f", fontWeight: 700 }}
-                    onClick={logout}
-                  >
-                    Logout
-                  </div>
-                </>
+                <div style={{ ...dropItem, color: "#d32f2f" }} onClick={logout}>
+                  Logout
+                </div>
               ) : (
                 <>
-                  <div
-                    style={dropItem}
-                    onClick={() => {
-                      setOpen(false);
-                      navigate("/login");
-                    }}
-                  >
+                  <div style={dropItem} onClick={() => navigate("/login")}>
                     Login
                   </div>
-                  <div
-                    style={dropItem}
-                    onClick={() => {
-                      setOpen(false);
-                      navigate("/signup");
-                    }}
-                  >
+                  <div style={dropItem} onClick={() => navigate("/signup")}>
                     Signup
                   </div>
                 </>
               )}
             </div>
-          </div>
+          )}
         </div>
       </nav>
 
-      {/* Add the mobile CSS here or in your global CSS file */}
       <style>{`
         @media (max-width: 600px) {
-          .navBar {
-            flex-direction: column !important;
-            height: auto !important;
-            padding: 12px 16px !important;
-            align-items: center !important;
-          }
-
-          .leftWrap {
-            gap: 24px !important;
-            flex-wrap: wrap !important;
-            justify-content: center;
-          }
-
-          .tabGroup {
-            gap: 24px !important;
-            justify-content: center !important;
-            width: 100%;
-          }
-
-          .tabItem {
-            font-size: 14px !important;
-            padding: 8px 6px !important;
-          }
-
-          .tabIcon {
-            width: 18px !important;
-            height: 18px !important;
-          }
-
-          .rightWrap {
-            margin-top: 16px;
-            gap: 16px !important;
-            justify-content: center;
-            width: 100%;
-            flex-wrap: wrap;
-          }
+          .desktop-only { display: none; }
+          .mobile-only { display: block; }
         }
+        .mobile-only { display: none; cursor: pointer; }
       `}</style>
     </>
   );
@@ -217,12 +209,11 @@ const navBar = {
   padding: "0 24px",
   display: "flex",
   justifyContent: "space-between",
-  alignItems: "stretch",
+  alignItems: "center",
   borderBottom: "1px solid #e6eaf0",
   position: "sticky",
   top: 0,
-  zIndex: 100,
-  fontFamily: "Inter, system-ui, sans-serif",
+  zIndex: 9999,
 };
 
 const leftWrap = {
@@ -234,24 +225,37 @@ const leftWrap = {
 const tabGroup = {
   display: "flex",
   gap: "45px",
-  alignItems: "flex-end",
-  height: "100%",
 };
 
 const tabItem = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  justifyContent: "flex-end",
   gap: "6px",
-  fontSize: "16px",
   fontWeight: 700,
-  height: "100%",
+   transform: "translateY(8px)",
+};
+
+const tabText = {
+  marginTop: "10px",   // 👈 pushes text down
 };
 
 const tabIcon = {
   width: "22px",
   height: "22px",
+};
+
+const rightWrap = {
+  display: "flex",
+  alignItems: "center",
+  gap: "22px",
+};
+
+const rightLink = {
+  textDecoration: "none",
+  display: "flex",
+  alignItems: "center",
+  gap: "4px",
 };
 
 const accountBtn = {
@@ -263,16 +267,15 @@ const accountBtn = {
   alignItems: "center",
   gap: "6px",
   fontWeight: 600,
-  fontSize: "15px",
-  color: "#0d47a1",
 };
 
 const dropdown = {
   position: "absolute",
+  top: "100%",
   right: 0,
-  top: "44px",
-  background: "#fff",
+  marginTop: "8px",
   width: "220px",
+  background: "#fff",
   borderRadius: "10px",
   boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
   overflow: "hidden",
@@ -281,12 +284,5 @@ const dropdown = {
 const dropItem = {
   padding: "12px 16px",
   cursor: "pointer",
-  fontSize: "14px",
   borderBottom: "1px solid #f1f1f1",
-};
-const rightWrap = {
-  display: "flex",
-  alignItems: "center",
-  gap: "22px",
-  position: "relative",
 };
