@@ -1,0 +1,62 @@
+.timebus-banner {
+  position: relative;
+  background: #e6f1ff; /* light blue */
+  padding: 40px 40px;
+  overflow: hidden;
+}
+
+.content {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.text h1 {
+  font-size: 36px;
+  color: #0b4dbb;
+  margin-bottom: 10px;
+}
+
+.text p {
+  font-size: 18px;
+  color: #245fd3;
+}
+
+.image img {
+  max-width: 280px;
+}
+
+/* Waves */
+.wave {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 60px;
+}
+
+.wave path {
+  fill: #e6f1ff;
+}
+
+.wave.top {
+  top: 0;
+}
+
+.wave.bottom {
+  bottom: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .image img {
+    max-width: 220px;
+  }
+}
