@@ -166,44 +166,67 @@ export default function Navbar() {
 
       {/* Add the mobile CSS here or in your global CSS file */}
       <style>{`
-        @media (max-width: 600px) {
-          .navBar {
-            flex-direction: column !important;
-            height: auto !important;
-            padding: 12px 16px !important;
-            align-items: center !important;
-          }
+@media (max-width: 600px) {
+  .navBar {
+    flex-direction: column !important;
+    height: auto !important;
+    padding: 12px 14px !important;
+    align-items: stretch !important;
+    gap: 10px;
+  }
 
-          .leftWrap {
-            gap: 24px !important;
-            flex-wrap: wrap !important;
-            justify-content: center;
-          }
+  /* Top row: logo */
+  .leftWrap {
+    width: 100%;
+    justify-content: center;
+    gap: 16px !important;
+    flex-wrap: wrap;
+  }
 
-          .tabGroup {
-            gap: 24px !important;
-            justify-content: center !important;
-            width: 100%;
-          }
+  /* Tabs row */
+  .tabGroup {
+    width: 100%;
+    justify-content: space-around !important;
+    gap: 0 !important;
+    border-top: 1px solid #eef2f7;
+    padding-top: 10px;
+  }
 
-          .tabItem {
-            font-size: 14px !important;
-            padding: 8px 6px !important;
-          }
+  .tabItem {
+    font-size: 14px !important;
+    padding: 10px 12px !important;
+    min-width: 80px;
+  }
 
-          .tabIcon {
-            width: 18px !important;
-            height: 18px !important;
-          }
+  .tabIcon {
+    width: 18px !important;
+    height: 18px !important;
+  }
 
-          .rightWrap {
-            margin-top: 16px;
-            gap: 16px !important;
-            justify-content: center;
-            width: 100%;
-            flex-wrap: wrap;
-          }
-        }
+  /* Bottom actions row */
+  .rightWrap {
+    width: 100%;
+    justify-content: space-around !important;
+    gap: 12px !important;
+    margin-top: 6px;
+    flex-wrap: nowrap;
+  }
+
+  /* Make icons easier to tap */
+  .rightWrap a,
+  .rightWrap div {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Hide text where needed */
+  .hide-sm {
+    display: none !important;
+  }
+}
+
       `}</style>
     </>
   );
@@ -293,4 +316,5 @@ const rightWrap = {
   gap: "22px",
   position: "relative",
 };
+
 
