@@ -315,10 +315,19 @@ const TimeBusBanner = () => {
 
 
 
-                <button style={searchBtn} onClick={searchHandler}>
+                <div style={{ width: "100%" }}>
+  <button
+    style={{
+      ...searchBtn,
+      width: "100%",
+      justifyContent: "center"
+    }}
+    onClick={searchHandler}
+  >
+    <FaSearch /> Search Buses
+  </button>
+</div>
 
-                  <FaSearch /> Search Buses
-                </button>
               </div>
             </div>
           </div>
@@ -723,6 +732,7 @@ const leftContainer = {
   padding: "28px",
   borderRadius: "20px"
 };
+
 
 
 
