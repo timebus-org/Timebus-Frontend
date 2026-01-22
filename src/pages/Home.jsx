@@ -16,6 +16,9 @@ import busImage from "../assets/bus.jpg";
 import mumPunImage from "../assets/mum-pun.jpg";
 import chen from "../assets/chennai-blr.jpg";
 import hyd from "../assets/blr-hyd.jpg";
+import "./TimeBusBanner.css";
+import peopleIllustration from "../assets/people-illustration.png";
+
 export default function Home() {
   const navigate = useNavigate();
   const today = new Date().toISOString().split("T")[0];
@@ -93,6 +96,54 @@ const setTomorrow = () => {
     const year = dateObj.getFullYear();
     return `${day}/${month}/${year}`; // DD/MM/YYYY
   };
+const TimeBusBanner = () => {
+  return (
+    <div className="timebus-banner">
+      {/* Top Wave */}
+      <svg
+        className="wave top"
+        viewBox="0 0 1440 60"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M0,40 C80,20 160,20 240,40 320,60 400,60 480,40
+             560,20 640,20 720,40 800,60 880,60 960,40
+             1040,20 1120,20 1200,40 1280,60 1360,60 1440,40 L1440,0 L0,0 Z"
+        />
+      </svg>
+
+      {/* Content */}
+      <div className="content">
+        <div className="text">
+          <h1>Your journey starts here</h1>
+<p>Book your first bus ticket with TimeBus</p>
+
+        </div>
+
+        <div className="image">
+          <img
+  src={peopleIllustration}
+  alt="Happy travelers"
+/>
+
+        </div>
+      </div>
+
+      {/* Bottom Wave */}
+      <svg
+        className="wave bottom"
+        viewBox="0 0 1440 60"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M0,20 C80,40 160,40 240,20 320,0 400,0 480,20
+             560,40 640,40 720,20 800,0 880,0 960,20
+             1040,40 1120,40 1200,20 1280,0 1360,0 1440,20 L1440,60 L0,60 Z"
+        />
+      </svg>
+    </div>
+  );
+};
 
 
 
@@ -316,6 +367,7 @@ const setTomorrow = () => {
     ))}
   </div>
 </section>
+<TimeBusBanner />
 
       {/* ================= TRUST / RATINGS ================= */}
       
@@ -350,10 +402,10 @@ const setTomorrow = () => {
 </section>
 
 
+
       {/* ================= CONTENT ================= */}
       <section style={aboutSection}>
   <div style={aboutContainer}>
-
     <h2 style={aboutTitle}>About TimeBus</h2>
 
     <p style={aboutText}>
@@ -376,9 +428,8 @@ const setTomorrow = () => {
       experience. Whether traveling for business, leisure, or personal reasons,
       TimeBus ensures a comfortable and reliable journey.
     </p>
-
   </div>
-</section>
+</section>;
 
 
 
@@ -638,12 +689,6 @@ const aboutSection = {
   justifyContent: "center"
 };
 
-const aboutSection = {
-  backgroundColor: "#f9fafb",
-  padding: "40px 20px",
-  fontFamily: "Inter, system-ui",
-  color: "#374151",
-};
 
 const aboutContainer = {
   maxWidth: 900,
@@ -662,3 +707,4 @@ const aboutText = {
   lineHeight: 1.7,
   marginBottom: 16,
 };
+
