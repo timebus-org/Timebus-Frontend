@@ -21,16 +21,18 @@ export default function BookingSummary() {
         return;
       }
 
-      setUser(session.user);
+      const authUser = session.user;
+      setUser(authUser);
 
-      const { data, error } = await supabase
+      // Fetch from profiles table
+      const { data: profileData, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", session.user.id)
+        .eq("id", authUser.id)
         .single();
 
-      if (!error) {
-        setProfile(data);
+      if (!error && profileData) {
+        setProfile(profileData);
       }
 
       setLoading(false);
@@ -52,8 +54,8 @@ export default function BookingSummary() {
     distanceKm = 0,
   } = state;
 
+  // 🧮 Fare calculation
   let totalFare = 0;
-
   if (tripType === "local") {
     totalFare = selectedPackage.price;
   } else {
@@ -65,20 +67,48 @@ export default function BookingSummary() {
 
   const advance = Math.round(totalFare * 0.2);
 
+  // 📌 Get display info: merge profile + auth metadata
+  const displayName =
+    profile?.full_name || user?.user_metadata?.full_name || "";
+  const displayPhone =
+    profile?.phone || user?.user_metadata?.phone || "";
+  const displayEmail = user?.email || profile?.email || "";
+
+  // 🔹 Razorpay payment handler
   const handlePayment = (amount, paymentType) => {
-    navigate("/bookingConfirmation", {
-      state: {
-        ...state,
-        totalFare,
-        paidAmount: amount,
-        paymentType,
-        user: {
-          name: profile?.full_name,
-          phone: profile?.phone,
-          email: user.email,
-        },
+    const options = {
+      key: "YOUR_RAZORPAY_KEY_ID", // Replace with your Razorpay Key ID
+      amount: amount * 100, // amount in paise
+      currency: "INR",
+      name: "TimeBus",
+      description: `Payment for ${paymentType}`,
+      handler: function (response) {
+        // After successful payment, redirect to booking confirmation
+        navigate("/bookingConfirmation", {
+          state: {
+            ...state,
+            totalFare,
+            paidAmount: amount,
+            paymentType,
+            user: {
+              name: displayName,
+              phone: displayPhone,
+              email: displayEmail,
+            },
+            paymentId: response.razorpay_payment_id,
+          },
+        });
       },
-    });
+      prefill: {
+        name: displayName,
+        email: displayEmail,
+        contact: displayPhone,
+      },
+      theme: { color: "#2563EB" },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   return (
@@ -91,17 +121,14 @@ export default function BookingSummary() {
           <p>{cab.desc}</p>
 
           <h4>User Details</h4>
-          <p><b>Name:</b> {profile?.full_name}</p>
-          <p><b>Mobile:</b> {profile?.phone}</p>
-          <p><b>Email:</b> {user.email}</p>
+          <p><b>Name:</b> {displayName}</p>
+          <p><b>Mobile:</b> {displayPhone}</p>
+          <p><b>Email:</b> {displayEmail}</p>
 
           <h4>Trip Details</h4>
           <p><b>From:</b> {from}</p>
           <p><b>To:</b> {to}</p>
           <p><b>Date:</b> {date}</p>
-          {tripType === "outstation" && (
-            <p><b>Distance:</b> {distanceKm} Km</p>
-          )}
 
           <h4>Fare Calculation</h4>
           {tripType === "outstation" && (
