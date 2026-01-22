@@ -12,12 +12,11 @@ import {
 } from "react-icons/fa";
 
 import indianCities from "./indianCities.json";
-import busImage from "../assets/bus.jpg";
+import busImage from "../assets/bus1.png";
 import mumPunImage from "../assets/mum-pun.jpg";
 import chen from "../assets/chennai-blr.jpg";
 import hyd from "../assets/blr-hyd.jpg";
-import "./TimeBusBanner.css";
-import peopleIllustration from "../assets/people-illustration.png";
+import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -96,67 +95,19 @@ const setTomorrow = () => {
     const year = dateObj.getFullYear();
     return `${day}/${month}/${year}`; // DD/MM/YYYY
   };
-const TimeBusBanner = () => {
-  return (
-    <div className="timebus-banner">
-      {/* Top Wave */}
-      <svg
-        className="wave top"
-        viewBox="0 0 1440 60"
-        preserveAspectRatio="none"
-      >
-        <path
-          d="M0,40 C80,20 160,20 240,40 320,60 400,60 480,40
-             560,20 640,20 720,40 800,60 880,60 960,40
-             1040,20 1120,20 1200,40 1280,60 1360,60 1440,40 L1440,0 L0,0 Z"
-        />
-      </svg>
-
-      {/* Content */}
-      <div className="content">
-        <div className="text">
-          <h1>Your journey starts here</h1>
-<p>Book your first bus ticket with TimeBus</p>
-
-        </div>
-
-        <div className="image">
-          <img
-  src={peopleIllustration}
-  alt="Happy travelers"
-/>
-
-        </div>
-      </div>
-
-      {/* Bottom Wave */}
-      <svg
-        className="wave bottom"
-        viewBox="0 0 1440 60"
-        preserveAspectRatio="none"
-      >
-        <path
-          d="M0,20 C80,40 160,40 240,20 320,0 400,0 480,20
-             560,40 640,40 720,20 800,0 880,0 960,20
-             1040,40 1120,40 1200,20 1280,0 1360,0 1440,20 L1440,60 L0,60 Z"
-        />
-      </svg>
-    </div>
-  );
-};
 
 
 
   return (
     <>
       {/* ================= HERO (UNCHANGED) ================= */}
-      <section style={hero}>
-        <div style={heroGrid}>
-          <div>
+      <section style={hero} className="hero">
+        <div style={heroGrid} className="heroGrid">
+          <div style={leftContainer}>
             <h1 style={heading}>Book Bus Tickets Online</h1>
 
             <div style={searchCard}>
-              <div style={row}>
+              <div style={row} className="searchRow">
                 <div style={field} ref={fromRef}>
                   <FaBus />
                   <input
@@ -187,7 +138,7 @@ const TimeBusBanner = () => {
                   )}
                 </div>
 
-                <button style={swapBtn} onClick={swapCities}>
+                <button style={swapBtn} className="swapBtn" onClick={swapCities}>
                   <FaExchangeAlt />
                 </button>
 
@@ -327,7 +278,7 @@ const TimeBusBanner = () => {
   backgroundImage: `url(${busImage})` // only the image
 }}
 
-          />
+          className="heroImage"/>
         </div>
       </section>
 
@@ -367,7 +318,6 @@ const TimeBusBanner = () => {
     ))}
   </div>
 </section>
-<TimeBusBanner />
 
       {/* ================= TRUST / RATINGS ================= */}
       
@@ -402,10 +352,10 @@ const TimeBusBanner = () => {
 </section>
 
 
-
       {/* ================= CONTENT ================= */}
       <section style={aboutSection}>
   <div style={aboutContainer}>
+
     <h2 style={aboutTitle}>About TimeBus</h2>
 
     <p style={aboutText}>
@@ -428,8 +378,9 @@ const TimeBusBanner = () => {
       experience. Whether traveling for business, leisure, or personal reasons,
       TimeBus ensures a comfortable and reliable journey.
     </p>
+
   </div>
-</section>;
+</section>
 
 
 
@@ -689,22 +640,37 @@ const aboutSection = {
   justifyContent: "center"
 };
 
-
 const aboutContainer = {
-  maxWidth: 900,
+  maxWidth: "800px",
   margin: "0 auto",
+  textAlign: "left",
+  backgroundColor: "#ffffff",
+  borderRadius: "16px", // rounded corners
+  padding: "40px 30px",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.08)", // soft professional shadow
+  lineHeight: "1.6"
 };
 
 const aboutTitle = {
-  fontSize: 28,
-  fontWeight: 700,
-  color: "#0d47a1",
-  marginBottom: 24,
+  fontSize: "32px",
+  fontWeight: "700",
+  marginBottom: "20px",
+  color: "#0f172a",
+  textAlign: "center" // makes title centered and neat
 };
 
 const aboutText = {
-  fontSize: 16,
-  lineHeight: 1.7,
-  marginBottom: 16,
+  fontSize: "16px",
+  lineHeight: "1.8",
+  color: "#475569",
+  marginBottom: "16px"
 };
+const leftContainer = {
+  background: "rgba(255, 255, 255, 0.08)", // subtle glass look
+  backdropFilter: "blur(6px)",
+  backgroundColor: "rgba(0,0,0,0.25)",
+  padding: "28px",
+  borderRadius: "20px"
+};
+
 
