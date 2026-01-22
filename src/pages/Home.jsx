@@ -638,30 +638,27 @@ const aboutSection = {
   justifyContent: "center"
 };
 
+const aboutSection = {
+  backgroundColor: "#f9fafb",
+  padding: "40px 20px",
+  fontFamily: "Inter, system-ui",
+  color: "#374151",
+};
+
 const aboutContainer = {
-  maxWidth: "800px",
+  maxWidth: 900,
   margin: "0 auto",
-  textAlign: "left",
-  backgroundColor: "#ffffff",
-  borderRadius: "16px", // rounded corners
-  padding: "40px 30px",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.08)", // soft professional shadow
-  lineHeight: "1.6"
 };
 
 const aboutTitle = {
-  fontSize: "32px",
-  fontWeight: "700",
-  marginBottom: "20px",
-  color: "#0f172a",
-  textAlign: "center" // makes title centered and neat
+  fontSize: 28,
+  fontWeight: 700,
+  color: "#0d47a1",
+  marginBottom: 24,
 };
 
 const aboutText = {
-  fontSize: "16px",
-  lineHeight: "1.8",
-  color: "#475569",
-  marginBottom: "16px"
+  fontSize: 16,
+  lineHeight: 1.7,
+  marginBottom: 16,
 };
-
-
