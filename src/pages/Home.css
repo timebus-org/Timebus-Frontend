@@ -1,78 +1,70 @@
-/* ================= NEXT MOBILE UX UPGRADE ================= */
+/* ================= MOBILE ONLY POLISH ================= */
 @media (max-width: 768px) {
 
-  /* SAFETY */
+  /* stop right-side bleed */
   html, body {
-    width: 100%;
     overflow-x: hidden;
   }
 
-  /* HERO AS MOBILE CONTAINER */
+  /* hero cleanup */
   .hero {
-    height: auto !important;
-    min-height: unset !important;
-    padding: clamp(16px, 4vw, 24px) !important;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    box-sizing: border-box;
+    min-height: auto !important;
+    overflow-x: hidden !important;
   }
 
-  /* HERO GRID – SINGLE COLUMN */
+  /* stack hero properly */
   .heroGrid {
     grid-template-columns: 1fr !important;
-    width: 100%;
-    max-width: 520px; /* 👈 keeps box perfectly centered */
-    padding: 0 !important;
-    margin: 0 auto !important;
-    gap: clamp(14px, 3vw, 20px) !important;
+    padding: 32px 16px !important;
+    gap: 20px !important;
   }
 
-  /* HEADING – RESPONSIVE SCALE */
+  /* heading size */
   .hero h1 {
-    font-size: clamp(22px, 5.8vw, 28px) !important;
-    line-height: 1.25 !important;
+    font-size: 28px !important;
     text-align: center;
-    margin-bottom: 12px !important;
+    margin-bottom: 18px !important;
   }
 
-  /* SEARCH CARD – EMBEDDED FEEL */
+  /* search card centered */
   .searchCard {
     width: 100% !important;
-    padding: clamp(14px, 4vw, 20px) !important;
+    margin: 0 auto !important;
     border-radius: 18px !important;
-    box-sizing: border-box;
   }
 
-  /* STACK FORM */
+  /* stack fields */
   .searchRow {
     flex-direction: column !important;
     gap: 12px !important;
   }
 
-  /* INPUT FIELDS */
+  /* full width inputs */
   .searchRow > div {
     width: 100% !important;
-    min-width: 0 !important;
-    box-sizing: border-box;
+    min-width: unset !important;
   }
 
-  /* HIDE SWAP (MOBILE UX) */
+  /* hide swap on mobile */
   .swapBtn {
     display: none !important;
   }
 
-  /* SEARCH CTA – PRIMARY ACTION */
+  /* date buttons equal width */
+  .searchRow button {
+    flex: 1 !important;
+  }
+
+  /* search button polish */
   .searchRow > button,
   .searchRow > div:last-child button {
     width: 100% !important;
+    justify-content: center !important;
     padding: 14px 0 !important;
-    font-size: 16px !important;
     border-radius: 14px !important;
-    justify-content: center;
   }
 
-  /* REMOVE HERO IMAGE */
+  /* remove hero image */
   .heroImage {
     display: none !important;
   }
