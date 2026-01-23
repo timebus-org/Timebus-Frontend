@@ -71,4 +71,9 @@
   .heroImage {
     display: none !important;
   }
+
+  /* Hide Today/Tomorrow buttons */
+  .dayBtn {
+    display: none !important;
+  }
 }
