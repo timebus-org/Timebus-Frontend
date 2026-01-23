@@ -44,11 +44,7 @@ export default function FooterWithFaq() {
           answer:
             "You can apply promo codes during checkout, use eligible bank offers, and download the Timebus app for app-exclusive deals.",
         },
-        {
-          question: "Can I book government bus tickets on Timebus?",
-          answer:
-            "Yes, Timebus provides tickets for government-operated buses on many routes, ensuring safe and budget-friendly travel.",
-        },
+        
       ],
     },
     {
@@ -550,3 +546,4 @@ const bottomLink = {
   fontSize: 13,
   whiteSpace: "nowrap",
 };
+
