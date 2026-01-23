@@ -271,6 +271,7 @@ const TimeBusBanner = () => {
       <button
         type="button"
         onClick={setToday}
+        className="dayBtn"
         style={{
           padding: "6px 12px",
           borderRadius: 8,
@@ -287,6 +288,7 @@ const TimeBusBanner = () => {
       <button
         type="button"
         onClick={setTomorrow}
+        className="dayBtn"
         style={{
           padding: "6px 12px",
           borderRadius: 8,
@@ -729,6 +731,7 @@ const leftContainer = {
   padding: "28px",
   borderRadius: "20px"
 };
+
 
 
 
