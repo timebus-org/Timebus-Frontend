@@ -58,7 +58,7 @@ export default function FooterWithFaq() {
         {
           question: "What if my waitlisted ticket doesn't get confirmed?",
           answer:
-            "If your waitlisted ticket is not confirmed, you will receive a 3X refund to book an alternate bus or train through Timebus.",
+            "If your waitlisted ticket is not confirmed, you will receive an alternate bus or train through Timebus.",
         },
         {
           question: "How do I get my ticket after booking?",
@@ -546,4 +546,5 @@ const bottomLink = {
   fontSize: 13,
   whiteSpace: "nowrap",
 };
+
 
