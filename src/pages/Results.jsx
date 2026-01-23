@@ -60,24 +60,25 @@ export default function Results() {
   const [loading, setLoading] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
 
-  useEffect(() => {
-    const fetchBuses = async () => {
-      try {
-        const res = await axios.get(
-  `${import.meta.env.VITE_API_URL}/api/buses/search?${params.toString()}`
-);
+useEffect(() => {
+  const fetchBuses = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/buses/search?${params.toString()}`
+      );
+      setBuses(res.data);
+      setFilteredBuses(res.data);
+    } catch (err) {
+      console.error("Fetch buses failed:", err);
+      setBuses([]);
+      setFilteredBuses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchBuses();
+}, [search]);
 
-        setBuses(res.data);
-        setFilteredBuses(res.data);
-      } catch {
-        setBuses([]);
-        setFilteredBuses([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBuses();
-  }, [search]);
 
   if (loading) return <div className="loading">Loading buses…</div>;
 
@@ -158,4 +159,5 @@ export default function Results() {
     </div>
   );
 }
+
 
