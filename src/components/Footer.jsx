@@ -329,7 +329,7 @@ export default function FooterWithFaq() {
 
             <div style={socialRow}>
               <SocialIcon
-                link="https://facebook.com/timebus"
+                link="https://www.facebook.com/timebus.in/"
                 icon={<FaFacebookF />}
                 label="Facebook"
               />
@@ -546,5 +546,6 @@ const bottomLink = {
   fontSize: 13,
   whiteSpace: "nowrap",
 };
+
 
 
