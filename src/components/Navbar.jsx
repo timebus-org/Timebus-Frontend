@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { FaUserCircle, FaPhoneAlt, FaClipboardList } from "react-icons/fa";
 import { supabase } from "../supabaseClient";
@@ -15,15 +15,11 @@ export default function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-    });
-
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null);
       setOpen(false);
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
@@ -43,11 +39,18 @@ export default function Navbar() {
 
   const registeredName = user?.user_metadata?.full_name;
 
-  // Section-based active tabs
+  // Bus and cab pages
   const busPages = ["/", "/bus-tickets", "/bus-search", "/booking-summary", "/cancel-ticket", "/reschedule-ticket"];
   const cabPages = ["/CarBooking", "/cab-search", "/cab-summary", "/cab-cancel", "/cab-reschedule"];
+
   const isBusActive = busPages.includes(location.pathname);
   const isCabActive = cabPages.includes(location.pathname);
+
+  // Handle click navigation
+  const handleTabClick = (tab) => {
+    if (tab === "bus") navigate("/bus-tickets");
+    else navigate("/CarBooking");
+  };
 
   return (
     <>
@@ -58,27 +61,29 @@ export default function Navbar() {
             <img src={logo} alt="Logo" className="logo" />
           </Link>
 
-          {/* Desktop + Mobile Top Tabs */}
+          {/* Desktop Tabs only */}
           <div className="tabGroup">
-            <NavLink to="/bus-tickets" className={`tabItem ${isBusActive ? "active" : ""}`}>
+            <div className={`tabItem ${isBusActive ? "active" : ""}`} onClick={() => handleTabClick("bus")}>
               <img src={busIcon} alt="Bus" className="tabIcon" />
               <span>Bus</span>
               <span className="underline" />
-            </NavLink>
-            <NavLink to="/CarBooking" className={`tabItem ${isCabActive ? "active" : ""}`}>
+            </div>
+            <div className={`tabItem ${isCabActive ? "active" : ""}`} onClick={() => handleTabClick("cab")}>
               <img src={cbIcon} alt="Cab" className="tabIcon" />
               <span>Cabs</span>
               <span className="underline" />
-            </NavLink>
+            </div>
           </div>
         </div>
 
         <div className="rightWrap">
-          <Link to="/contact-us" className="topLink">
+          <Link to="/contact-us" className={`topLink ${isBusActive ? "active" : ""}`}>
             <FaPhoneAlt /> <span className="hide-sm">Help</span>
+            <span className="underline" />
           </Link>
-          <Link to="/print-ticket" className="topLink">
+          <Link to="/print-ticket" className={`topLink ${isBusActive ? "active" : ""}`}>
             <FaClipboardList /> <span className="hide-sm">Print Ticket</span>
+            <span className="underline" />
           </Link>
 
           <div ref={dropdownRef} className="accountWrapper">
@@ -105,34 +110,38 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* ===== Bottom Fixed Tabs (optional) ===== */}
+      {/* ===== Mobile Bottom Tabs ===== */}
       <div className="mobileTabs">
-        <NavLink to="/bus-tickets" className={`mobileTab ${isBusActive ? "active" : ""}`}>
+        <div className={`mobileTab ${isBusActive ? "active" : ""}`} onClick={() => handleTabClick("bus")}>
           <img src={busIcon} alt="Bus" className="tabIcon" />
           <span>Bus</span>
           <span className="underline" />
-        </NavLink>
-        <NavLink to="/CarBooking" className={`mobileTab ${isCabActive ? "active" : ""}`}>
+        </div>
+        <div className={`mobileTab ${isCabActive ? "active" : ""}`} onClick={() => handleTabClick("cab")}>
           <img src={cbIcon} alt="Cab" className="tabIcon" />
           <span>Cabs</span>
           <span className="underline" />
-        </NavLink>
+        </div>
       </div>
 
+      {/* ===== Styles ===== */}
       <style>{`
 .navBar { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 0 24px; height: 74px; background: #fff; border-bottom: 1px solid #e6eaf0; font-family: Inter, system-ui, sans-serif; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
 .logo { height: 46px; }
 .leftWrap { display: flex; align-items: center; gap: 50px; }
-.tabGroup { display: flex; gap: 45px; align-items: flex-end; height: 100%; }
-.tabItem { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; font-size: 16px; font-weight: 700; position: relative; text-decoration: none; color: #1f2937; transition: all 0.25s ease; }
+.tabGroup { display: flex; gap: 45px; align-items: flex-end; height: 100%; position: relative; }
+.tabItem { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; font-size: 16px; font-weight: 700; position: relative; cursor: pointer; color: #1f2937; transition: color 0.25s ease; }
 .tabItem.active { color: #1976d2; }
-.tabItem .underline { position: absolute; bottom: 0; height: 3px; width: 100%; background: #1976d2; border-radius: 3px; transform: scaleX(0); transition: transform 0.25s ease; }
+.tabItem .underline { position: absolute; bottom: 0; height: 3px; width: 100%; background: #1976d2; border-radius: 3px; transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
 .tabItem.active .underline { transform: scaleX(1); }
 .tabIcon { width: 22px; height: 22px; }
 
 .rightWrap { display: flex; align-items: center; gap: 22px; position: relative; }
-.topLink { text-decoration: none; display: flex; align-items: center; gap: 4px; color: #1f2937; font-weight: 500; transition: all 0.2s ease; }
-.topLink:hover { color: #1976d2; }
+.topLink { text-decoration: none; display: flex; align-items: center; gap: 4px; color: #1f2937; font-weight: 500; transition: all 0.2s ease; position: relative; }
+.topLink.active { color: #1976d2; }
+.topLink .underline { position: absolute; bottom: -2px; height: 3px; width: 100%; background: #1976d2; border-radius: 3px; transform: scaleX(0); transition: transform 0.3s ease; }
+.topLink.active .underline { transform: scaleX(1); }
+
 .accountWrapper { position: relative; }
 .accountBtn { cursor: pointer; background: #e3f2fd; padding: 6px 12px; border-radius: 6px; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 15px; color: #0d47a1; transition: all 0.2s ease; }
 .accountBtn:hover { background: #bbdefb; }
@@ -142,40 +151,19 @@ export default function Navbar() {
 .dropItem:hover { background: #f5f5f5; }
 .dropItem.logout { color: #d32f2f; font-weight: 700; }
 
-/* Mobile Bottom Tabs */
-/* Mobile Bottom Tabs */
-.mobileTabs {
-  display: none; /* hide by default (desktop) */
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #fff;
-  border-top: 1px solid #e6eaf0;
-  justify-content: space-around;
-  padding: 6px 0;
-  box-shadow: 0 -3px 10px rgba(0,0,0,0.08);
-  z-index: 101;
-}
-
-@media (max-width: 600px) {
-  .mobileTabs {
-    display: flex; /* show only on mobile */
-  }
-}
-
-.mobileTab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #6b7280; font-weight: 600; position: relative; text-decoration: none; transition: all 0.25s ease; }
+.mobileTabs { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 1px solid #e6eaf0; justify-content: space-around; padding: 6px 0; box-shadow: 0 -3px 10px rgba(0,0,0,0.08); z-index: 101; }
+.mobileTab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #6b7280; font-weight: 600; position: relative; text-decoration: none; transition: color 0.25s ease; cursor: pointer; }
 .mobileTab.active { color: #1976d2; }
-.mobileTab .underline { position: absolute; bottom: 0; height: 3px; width: 100%; background: #1976d2; border-radius: 3px; transform: scaleX(0); transition: transform 0.25s ease; }
+.mobileTab .underline { position: absolute; bottom: 0; height: 3px; width: 100%; background: #1976d2; border-radius: 3px; transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
 .mobileTab.active .underline { transform: scaleX(1); }
 
-/* ---------- Responsive ---------- */
 @media (max-width: 600px) {
   .hide-sm { display: none; }
-  .topLink { display: none; }
-  .mobileTabs { display: flex; } /* Show fixed bottom tabs on mobile */
+  .topLink { display: flex; }
+  .tabGroup { display: none; } /* hide tabs near logo on mobile */
+  .mobileTabs { display: flex; } /* show fixed bottom tabs */
   .navBar { padding: 0 14px; height: 60px; }
-  .logo { height: 40px; }
+  .logo { height: 46px; }
 }
       `}</style>
     </>
