@@ -4,7 +4,7 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaSnowflake, FaChair, FaBed, FaFire, FaFilter } from "react-icons/fa";
 import SeatLayout from "../components/SeatLayout";
-import "./Results.css"; // <- CSS imported here
+import "./Results.css";
 
 /* ===================== FILTER COMPONENT ===================== */
 function BusFilter({ buses, onFilter, toggleMobile }) {
@@ -12,9 +12,15 @@ function BusFilter({ buses, onFilter, toggleMobile }) {
 
   useEffect(() => {
     let filtered = [...buses];
-    if (busType) filtered = filtered.filter(b => b.busType === busType);
+
+    if (busType) {
+      filtered = filtered.filter(b =>
+        b.busType?.toLowerCase().includes(busType.toLowerCase())
+      );
+    }
+
     onFilter(filtered);
-  }, [busType, buses]);
+  }, [busType, buses, onFilter]);
 
   return (
     <div className="filterContent">
@@ -24,10 +30,11 @@ function BusFilter({ buses, onFilter, toggleMobile }) {
           <button className="closeBtn" onClick={toggleMobile}>✕</button>
         )}
       </div>
+
       {[
         { key: "AC", label: "AC", icon: <FaSnowflake /> },
         { key: "SEATER", label: "Seater", icon: <FaChair /> },
-        { key: "NONAC", label: "Non AC", icon: <FaFire /> },
+        { key: "NON-AC", label: "Non AC", icon: <FaFire /> },
         { key: "SLEEPER", label: "Sleeper", icon: <FaBed /> }
       ].map(t => (
         <button
@@ -75,15 +82,15 @@ export default function Results() {
 
   return (
     <div className="resultsPage">
-      {/* ================= FILTER ================= */}
       <aside className={`filterSidebar ${showFilter ? "open" : ""}`}>
-        <BusFilter buses={buses} onFilter={setFilteredBuses} toggleMobile={() => setShowFilter(false)} />
+        <BusFilter
+          buses={buses}
+          onFilter={setFilteredBuses}
+          toggleMobile={() => setShowFilter(false)}
+        />
       </aside>
 
-      {/* ================= RESULTS ================= */}
       <main className="resultsMain">
-
-        {/* MOBILE FILTER TOGGLE */}
         <div className="mobileFilterToggle">
           <button onClick={() => setShowFilter(true)}>
             <FaFilter /> Filter
@@ -91,15 +98,11 @@ export default function Results() {
         </div>
 
         {filteredBuses.map(bus => {
-          const seatsLeft = bus.seats?.filter(s => s.status === "available").length || 0;
+          const seatsLeft =
+            bus.seats?.filter(s => s.status === "available").length || 0;
 
           return (
-            <motion.div
-              key={bus._id}
-              layout
-              className="busCard"
-            >
-              {/* BUS INFO */}
+            <motion.div key={bus._id} layout className="busCard">
               <div className="busInfo">
                 <div className="busDetails">
                   <h4>{bus.busName}</h4>
@@ -126,7 +129,9 @@ export default function Results() {
                   </div>
                   <button
                     className="selectSeatsBtn"
-                    onClick={() => setOpenBusId(openBusId === bus._id ? null : bus._id)}
+                    onClick={() =>
+                      setOpenBusId(openBusId === bus._id ? null : bus._id)
+                    }
                   >
                     Select Seats
                   </button>
@@ -134,7 +139,6 @@ export default function Results() {
                 </div>
               </div>
 
-              {/* SEAT LAYOUT */}
               <AnimatePresence>
                 {openBusId === bus._id && (
                   <motion.div
