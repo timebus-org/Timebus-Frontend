@@ -1,0 +1,207 @@
+/* ================= GLOBAL ================= */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: #f5f5f5;
+  overflow-x: hidden;
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  font-size: 18px;
+}
+
+/* ================= FILTER ================= */
+.filterSidebar {
+  width: 260px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.filterContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.closeBtn {
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.filterBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  font-weight: 500;
+  font-size: 14px;
+  background: #f5f5f5;
+  color: #000;
+  transition: all 0.2s ease;
+}
+
+.filterBtn.active {
+  background: #007bff;
+  color: #fff;
+}
+
+/* ================= RESULTS ================= */
+.resultsPage {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 20px;
+}
+
+.resultsMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.busCard {
+  background: #fff;
+  padding: 16px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.busInfo {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.busDetails {
+  flex: 1;
+  min-width: 140px;
+}
+
+.busDetails h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.busDetails p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.rating {
+  color: #ffb400;
+  font-weight: 500;
+}
+
+.busTiming {
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+  color: #555;
+  flex: 1;
+  min-width: 180px;
+  justify-content: space-around;
+}
+
+.timeBlock {
+  text-align: center;
+}
+
+.duration {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
+
+.fareSection {
+  min-width: 120px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fareSection .price s {
+  color: #888;
+  margin-right: 6px;
+}
+
+.selectSeatsBtn {
+  margin-top: 6px;
+  padding: 6px 12px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.selectSeatsBtn:hover {
+  background: #0056b3;
+}
+
+.mobileFilterToggle {
+  display: none;
+  margin-bottom: 10px;
+}
+
+.mobileFilterToggle button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #007bff;
+  background: #007bff;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ================= MOBILE RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .mobileFilterToggle { display: block; }
+
+  .filterSidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    height: 100vh;
+    z-index: 200;
+    padding: 24px;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+  }
+  .filterSidebar.open { left: 0; }
+
+  .resultsPage { flex-direction: column; padding: 12px; }
+  .busInfo { flex-direction: column; gap: 12px; }
+}
