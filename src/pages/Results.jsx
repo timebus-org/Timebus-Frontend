@@ -63,9 +63,8 @@ export default function Results() {
 useEffect(() => {
   const fetchBuses = async () => {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/buses/search?${params.toString()}`
-      );
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/buses/search?${params.toString()}`);
+
       setBuses(res.data);
       setFilteredBuses(res.data);
     } catch (err) {
@@ -159,5 +158,6 @@ useEffect(() => {
     </div>
   );
 }
+
 
 
