@@ -369,10 +369,7 @@ const TimeBusBanner = () => {
         />
         <div style={routeInfo}>
           <div style={routeTitle}>{r.title}</div>
-          <div style={routeMeta}>
-            <span>Starting from</span>
-            <strong>{r.price}</strong>
-          </div>
+          
         </div>
       </div>
     ))}
@@ -732,6 +729,7 @@ const leftContainer = {
   padding: "28px",
   borderRadius: "20px"
 };
+
 
 
 
