@@ -64,8 +64,9 @@ export default function Results() {
     const fetchBuses = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/buses/search?${params.toString()}`
-        );
+  `${import.meta.env.VITE_API_URL}/api/buses/search?${params.toString()}`
+);
+
         setBuses(res.data);
         setFilteredBuses(res.data);
       } catch {
@@ -157,3 +158,4 @@ export default function Results() {
     </div>
   );
 }
+
