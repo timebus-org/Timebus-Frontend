@@ -137,7 +137,12 @@ export default function Navbar() {
 
       <style>{`
 .navBar { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 0 24px; height: 74px; background: #fff; border-bottom: 1px solid #e6eaf0; font-family: Inter, system-ui, sans-serif; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
-.logo { height: 46px; }
+.logo {
+  height: auto;        /* natural height */
+  width: auto;         /* natural width */
+  max-height: none;    /* no restriction */
+  max-width: 100px;    /* optional: prevent it from being too wide on large screens */
+}
 
 .leftWrap { display: flex; align-items: center; gap: 50px; }
 .tabGroup { display: flex; gap: 45px; align-items: flex-end; height: 100%; }
@@ -188,3 +193,4 @@ export default function Navbar() {
     </>
   );
 }
+
