@@ -1,235 +1,306 @@
+/* ================= BASE ================= */
+* {
+  box-sizing: border-box;
+}
+
 body {
+  margin: 0;
   background: #f5f7fa;
+  font-family: Inter, system-ui, sans-serif;
 }
 
 .tb-page {
-  padding: 20px;
-  font-family: Inter, system-ui;
+  padding: 16px;
 }
 
+/* ================= LAYOUT ================= */
 .tb-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
   max-width: 1200px;
   margin: auto;
-  display: grid;
-  grid-template-columns: 2.3fr 1fr;
-  gap: 20px;
 }
 
+/* ================= CARDS ================= */
 .tb-card {
   background: #fff;
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 16px;
-  margin-bottom: 14px;
-  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  margin-bottom: 16px;
 }
 
-/* BUS HEADER */
-.tb-bus-header {
-  background: linear-gradient(180deg, #fff, #f8fafc);
-}
-
+/* ================= BUS HEADER ================= */
 .tb-bus-top {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
 .tb-bus-name {
-  font-size: 20px;
+  margin: 0;
+  font-size: 18px;
   font-weight: 700;
 }
 
 .tb-bus-type {
-  font-size: 13px;
-  color: #64748b;
+  font-size: 12px;
+  color: #777;
 }
 
 .tb-date {
   font-size: 13px;
-  color: #475569;
+  font-weight: 600;
 }
 
 .tb-time-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin: 16px 0;
+  justify-content: space-between;
+  margin-top: 12px;
 }
 
 .tb-time {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
 }
 
 .tb-city {
   font-size: 13px;
-  color: #64748b;
+  color: #666;
 }
 
 .tb-duration {
   text-align: center;
   font-size: 12px;
-  color: #64748b;
+  color: #888;
 }
 
 .tb-line {
-  height: 1px;
-  width: 70px;
-  background: #c7d2fe;
-  margin: 6px auto;
+  height: 2px;
+  background: #ddd;
+  margin-top: 4px;
+  border-radius: 10px;
 }
 
 .tb-point-row {
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
   font-size: 13px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ================= SEATS ================= */
+.tb-seat-layout {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .tb-seat {
-  background: #e0f2fe;
-  padding: 5px 10px;
-  border-radius: 999px;
+  background: #f0f0f0;
+  padding: 6px 10px;
+  border-radius: 6px;
   font-size: 12px;
-  margin-right: 6px;
+  font-weight: 600;
 }
 
-/* PASSENGERS */
+/* ================= SECTION TITLE ================= */
 .tb-section-title {
+  font-size: 16px;
   font-weight: 700;
-  margin: 28px 0 14px;   /* MORE vertical gap */
-  padding-bottom: 10px; /* space before content */
-  font-size: 18px;
-  line-height: 1.3;
+  margin: 16px 0 8px;
 }
 
 .tb-section-title span {
-  display: block;       /* forces gap below title */
-  margin-top: 6px;
-  font-size: 13px;
-  color: #64748b;
+  display: block;
+  font-size: 12px;
+  color: #777;
 }
 
-
-.tb-passenger-card {
-  background: #f8fafc;
-  border: 1px dashed #e2e8f0;
-}
-
+/* ================= PASSENGERS ================= */
 .tb-passenger-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .tb-seat-chip {
-  background: #e0f2fe;
-  padding: 4px 10px;
-  border-radius: 999px;
+  background: #e8f0ff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 600;
   font-size: 12px;
 }
 
 .tb-status {
-  font-size: 19px;
-  color: #94a3b8;
+  font-size: 16px;
+  color: #ccc;
 }
 
 .tb-status.valid {
-  color: #16a34a;
+  color: #28a745;
 }
 
 .tb-form-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 10px;
 }
 
-input, select {
+.tb-form-grid input,
+.tb-form-grid select {
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border: 1px solid #ccc;
+  font-size: 14px;
 }
 
-input.error, select.error {
-  border-color: #dc2626;
+.tb-form-grid input.error,
+.tb-form-grid select.error {
+  border-color: #e53935;
 }
 
-/* ASSURANCE */
-.tb-assurance {
-  background: #f0fdf4;
+/* ================= CONTACT ================= */
+.tb-muted {
+  font-size: 12px;
+  color: #777;
+}
+
+/* ================= ASSURANCE ================= */
+.tb-assurance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .tb-assured-box {
   margin-top: 10px;
-  background: #ecfdf5;
+  background: #f1f8ff;
   padding: 10px;
   border-radius: 8px;
-  color: #16a34a;
+  font-size: 13px;
 }
 
-/* FARE */
-.tb-right .tb-sticky {
+/* ================= RIGHT SIDE ================= */
+.tb-right {
+  position: relative;
+}
+
+.tb-sticky {
   position: sticky;
   top: 20px;
 }
 
-.tb-fare-row,
-.tb-fare-total {
+.tb-fare-row {
   display: flex;
   justify-content: space-between;
-  margin: 10px 0;
+  margin: 8px 0;
+  font-size: 14px;
 }
 
 .tb-fare-row.success {
-  color: #16a34a;
+  color: #2e7d32;
 }
 
 .tb-divider {
   height: 1px;
-  background: #e2e8f0;
-  margin: 10px 0;
+  background: #eee;
+  margin: 12px 0;
+}
+
+.tb-fare-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .tb-coupon-row {
   display: flex;
   gap: 8px;
+  margin-top: 10px;
+}
+
+.tb-coupon-row input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
 .tb-coupon-row button {
-  background: #2563eb;
-  color: #fff;
-  border: none;
   padding: 10px 14px;
   border-radius: 8px;
+  border: none;
+  background: #1976d2;
+  color: #fff;
+  font-weight: 600;
   cursor: pointer;
 }
 
-.tb-primary-btn {
-  width: 100%;
-  margin-top: 12px;
-  background: #dc2626;
-  color: #fff;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  font-weight: 700;
-  font-size: 16px;
-}
-
-.tb-primary-btn:disabled {
-  background: #94a3b8;
+.tb-coupon-msg {
+  font-size: 12px;
+  margin-top: 6px;
 }
 
 .tb-trust {
   font-size: 12px;
-  color: #475569;
-  margin: 10px 0;
+  margin-top: 10px;
+  color: #777;
 }
 
-@media (max-width: 900px) {
+.tb-primary-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: #28a745;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tb-primary-btn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
   .tb-layout {
     grid-template-columns: 1fr;
   }
+
+  .tb-sticky {
+    position: static;
+  }
+
   .tb-form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .tb-time-row {
+    gap: 12px;
+  }
+
+  .tb-time {
+    font-size: 16px;
+  }
+
+  .tb-bus-name {
+    font-size: 16px;
+  }
+
+  .tb-primary-btn {
+    font-size: 15px;
   }
 }
