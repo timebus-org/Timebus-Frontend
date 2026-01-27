@@ -235,5 +235,75 @@
   width: 40px;
   height: 40px;
 }
+.bus-container {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.deck {
+  margin-bottom: 24px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.aisle {
+  background: transparent;
+}
+
+.seat {
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.seater {
+  width: 50px;
+  height: 55px;
+}
+
+.sleeper {
+  width: 100px;
+  height: 40px;
+}
+
+.booked {
+  background: #d32f2f;
+  cursor: not-allowed;
+}
+
+.waiting {
+  background: #fbc02d;
+}
+
+.available {
+  background: #e0e0e0;
+}
+
+.selected {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.driver {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.driver img {
+  width: 40px;
+}
 
 </style>
