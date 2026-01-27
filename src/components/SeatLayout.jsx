@@ -30,13 +30,8 @@ export default function SeatLayout({ bus }) {
     });
   };
 
-  /* ================= BOOK NOW ================= */
   const handleBookNow = async () => {
-    if (selectedSeats.length === 0) {
-      alert("No seats selected!");
-      return;
-    }
-
+    if (selectedSeats.length === 0) return alert("No seats selected!");
     setLoading(true);
 
     try {
@@ -53,10 +48,7 @@ export default function SeatLayout({ bus }) {
         price: getSeatPrice(s),
       }));
 
-      const totalPrice = selectedSeatDetails.reduce(
-        (sum, s) => sum + s.price,
-        0
-      );
+      const totalPrice = selectedSeatDetails.reduce((sum, s) => sum + s.price, 0);
 
       navigate("/passenger-info", {
         state: {
@@ -76,35 +68,33 @@ export default function SeatLayout({ bus }) {
           totalPrice,
         },
       });
-    } catch (err) {
+    } catch {
       alert("Seat locking failed");
     } finally {
       setLoading(false);
     }
   };
 
-  /* ================= RENDER SEAT ================= */
+  /* ===== SOFA SEAT UI ===== */
   const renderSeat = (seat) => {
     const isSelected = selectedSeats.some(
       (s) => s.seatNumber === seat.seatNumber
     );
 
-    const bg =
-      seat.status === "booked"
-        ? "#c62828"
-        : isSelected
-        ? "#2e7d32"
-        : "#eee";
+    let bg = "#eee";              // available
+    if (seat.status === "booked") bg = "#c62828";
+    else if (seat.status === "locked") bg = "#fbc02d";
+    else if (isSelected) bg = "#2e7d32";
 
     return (
       <div
         key={seat.seatNumber}
         onClick={() => toggleSeat(seat)}
         style={{
-          width: 60,
-          height: 60,
+          width: seat.type === "sleeper" ? 115 : 60,
+          height: seat.type === "sleeper" ? 44 : 60,
+          borderRadius: seat.type === "sleeper" ? 12 : 18,
           background: bg,
-          borderRadius: 8,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -113,11 +103,30 @@ export default function SeatLayout({ bus }) {
           fontWeight: 700,
           fontSize: 12,
           color: seat.status === "booked" ? "#fff" : "#000",
-          boxShadow: isSelected ? "0 0 10px rgba(46,125,50,0.6)" : "0 2px 5px rgba(0,0,0,0.15)",
-          transition: "0.2s",
+          position: "relative",
+
+          /* 🔥 SOFA CUSHION EFFECT */
+          boxShadow:
+            seat.status === "available"
+              ? "inset 6px 6px 10px rgba(255,255,255,0.9), inset -6px -6px 10px rgba(0,0,0,0.12)"
+              : "0 2px 5px rgba(0,0,0,0.15)",
+
+          transition: "all 0.2s ease",
         }}
         title={`Seat ${seat.seatNumber} | ₹${getSeatPrice(seat)}`}
       >
+        {/* backrest */}
+        <div
+          style={{
+            position: "absolute",
+            top: 4,
+            width: "70%",
+            height: 10,
+            borderRadius: 6,
+            background: "rgba(0,0,0,0.08)",
+          }}
+        />
+
         {seat.seatNumber}
         <small style={{ fontSize: 10 }}>₹{getSeatPrice(seat)}</small>
       </div>
@@ -127,29 +136,30 @@ export default function SeatLayout({ bus }) {
   return (
     <div style={{ maxWidth: 520, margin: "auto", padding: 16 }}>
       {/* LEGEND */}
-      <div style={{ display: "flex", gap: 20, marginBottom: 16, fontSize: 14 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 18, height: 18, background: "#eee", border: "1px solid #999", borderRadius: 4 }} />
-          Available
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 18, height: 18, background: "#2e7d32", borderRadius: 4 }} />
-          Selected
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 18, height: 18, background: "#c62828", borderRadius: 4 }} />
-          Booked
-        </div>
+      <div style={{ display: "flex", gap: 20, marginBottom: 16, fontSize: 14, flexWrap: "wrap" }}>
+        {[
+          ["#eee", "Available"],
+          ["#2e7d32", "Selected"],
+          ["#c62828", "Booked"],
+          ["#fbc02d", "Locked"],
+        ].map(([color, label]) => (
+          <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ width: 18, height: 18, background: color, borderRadius: 4 }} />
+            {label}
+          </div>
+        ))}
       </div>
 
+      {/* BUS LAYOUT */}
       <div style={{ padding: 20, border: "2px solid #ccc", borderRadius: 12, background: "#fff", position: "relative" }}>
         <img src={SteeringIcon} alt="" width={30} style={{ position: "absolute", left: 20, top: 20 }} />
 
-        <div style={{ marginTop: 40, display: "flex", flexWrap: "wrap", gap: 10 }}>
+        <div style={{ marginTop: 40, display: "flex", flexWrap: "wrap", gap: 14, justifyContent: "center" }}>
           {bus.seats.map(renderSeat)}
         </div>
       </div>
 
+      {/* SUMMARY */}
       <div style={{ marginTop: 12, fontWeight: 600, background: "#fafafa", padding: 10, borderRadius: 6 }}>
         Selected Seats: {selectedSeats.map((s) => s.seatNumber).join(", ") || "None"}
         <br />
