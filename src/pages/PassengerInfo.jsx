@@ -1,11 +1,13 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axios from "axios";
 import "./PassengerInfo.css";
 
 export default function PassengerInfo() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
+  // Redirect if no state
   useEffect(() => {
     if (!state) navigate("/", { replace: true });
   }, [state, navigate]);
@@ -13,37 +15,39 @@ export default function PassengerInfo() {
   if (!state) return null;
 
   const {
-  busId,
-  tripId,
-  busName,
-  busType,
-  source,
-  destination,
-  journeyDate,
-  boardingPoint,
-  droppingPoint,
-  selectedSeats,
-  totalPrice,
-  departureTime,
-  arrivalTime,
-  duration,
-} = state;
+    busId,
+    tripId,
+    busName,
+    busType,
+    source,
+    destination,
+    journeyDate,
+    boardingPoint,
+    droppingPoint,
+    selectedSeats,
+    totalPrice,
+    departureTime,
+    arrivalTime,
+    duration,
+  } = state;
 
-  const normalizedSeats = Array.isArray(selectedSeats)
-  ? selectedSeats.map((s) => (typeof s === "string" ? s : s.seatNumber))
-  : [];
+  const normalizedSeats = (selectedSeats || []).map((s) =>
+    typeof s === "string" ? s : s.seatNumber
+  );
 
-  /* PASSENGERS */
+  const safeBoarding = boardingPoint || { location: "", time: "" };
+  const safeDropping = droppingPoint || { location: "", time: "" };
+
+  /* ===== PASSENGERS ===== */
   const [passengers, setPassengers] = useState(
-  normalizedSeats.map((seat) => ({
-    seat,
-    name: "",
-    age: "",
-    gender: "",
-    errors: {},
-  }))
-);
-
+    normalizedSeats.map((seat) => ({
+      seat,
+      name: "",
+      age: "",
+      gender: "",
+      errors: {},
+    }))
+  );
 
   const handlePassengerChange = (index, field, value) => {
     const copy = [...passengers];
@@ -60,20 +64,19 @@ export default function PassengerInfo() {
 
   const isPassengerValid = (p) =>
     p.name && p.age && p.gender && Object.keys(p.errors).length === 0;
-
   const isAllPassengersValid = passengers.every(isPassengerValid);
 
-  /* CONTACT */
+  /* ===== CONTACT ===== */
   const [contact, setContact] = useState({ phone: "", email: "" });
   const isContactValid =
     /^\d{10}$/.test(contact.phone) &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email);
 
-  /* TRIP ASSURANCE */
+  /* ===== TRIP ASSURANCE ===== */
   const ASSURANCE_PRICE = 119;
   const [tripAssured, setTripAssured] = useState(true);
 
-  /* COUPON */
+  /* ===== COUPON ===== */
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState("");
@@ -90,41 +93,43 @@ export default function PassengerInfo() {
 
   const finalAmount = totalPrice + (tripAssured ? ASSURANCE_PRICE : 0) - discount;
 
-  const handleContinue = async () => {
-  if (!isAllPassengersValid || !isContactValid) return;
+  /* ===== CONTINUE TO PAYMENT ===== */
+const handleContinue = () => {
+  if (!isAllPassengersValid || !isContactValid) {
+    alert("Fill all passenger and contact details correctly.");
+    return;
+  }
 
-  const bookingId = `TB${Date.now()}`;
-  const seatLockExpiresAt = Date.now() + 10 * 60 * 1000;
+  const bookingData = {
+    _id: "TB" + Date.now(),          // ✅ REQUIRED FOR PAYMENT
+    busId,
+    tripId,
+    busName,
+    busType,
+    source,
+    destination,
+    journeyDate,
+    boardingPoint: safeBoarding,
+    droppingPoint: safeDropping,
+    selectedSeats: normalizedSeats,
+    passengers,
+    contact,
+    totalPrice: finalAmount,         // ✅ REQUIRED
+    departureTime,
+    arrivalTime,
+    duration,
+  };
 
-  navigate("/payment", {
-    state: {
-      bookingId,
-      tripId,
-      busName,
-      source,
-      destination,
-      journeyDate,
-      departureTime,
-      boardingPoint,
-      selectedSeats: normalizedSeats,
-      passengers,
-      totalPrice: finalAmount,
-      contact,
-      seatLockExpiresAt,
-      
-    },
-  });
+  localStorage.setItem("bookingSession", JSON.stringify(bookingData));
+  navigate("/payment");
 };
-
 
 
   return (
     <div className="tb-page">
       <div className="tb-layout">
-
         {/* LEFT COLUMN */}
         <div className="tb-left">
-
           {/* BUS HEADER */}
           <div className="tb-card tb-bus-header">
             <div className="tb-bus-top">
@@ -153,16 +158,18 @@ export default function PassengerInfo() {
             </div>
 
             <div className="tb-point-row">
-              <span>📍 Boarding: <b>{boardingPoint}</b></span>
-              <span>📍 Dropping: <b>{droppingPoint}</b></span>
+              <span>
+                📍 Boarding: <b>{safeBoarding.location} ({safeBoarding.time})</b>
+              </span>
+              <span>
+                📍 Dropping: <b>{safeDropping.location} ({safeDropping.time})</b>
+              </span>
             </div>
 
             <div className="tb-seat-layout">
               {normalizedSeats.map((s) => (
-  <span key={s} className="tb-seat">Seat {s}</span>
-))}
-
-              
+                <span key={s} className="tb-seat">Seat {s}</span>
+              ))}
             </div>
           </div>
 
@@ -186,25 +193,19 @@ export default function PassengerInfo() {
                   placeholder="Full Name"
                   className={p.errors.name ? "error" : ""}
                   value={p.name}
-                  onChange={(e) =>
-                    handlePassengerChange(i, "name", e.target.value)
-                  }
+                  onChange={(e) => handlePassengerChange(i, "name", e.target.value)}
                 />
                 <input
                   type="number"
                   placeholder="Age"
                   className={p.errors.age ? "error" : ""}
                   value={p.age}
-                  onChange={(e) =>
-                    handlePassengerChange(i, "age", e.target.value)
-                  }
+                  onChange={(e) => handlePassengerChange(i, "age", e.target.value)}
                 />
                 <select
                   className={p.errors.gender ? "error" : ""}
                   value={p.gender}
-                  onChange={(e) =>
-                    handlePassengerChange(i, "gender", e.target.value)
-                  }
+                  onChange={(e) => handlePassengerChange(i, "gender", e.target.value)}
                 >
                   <option value="">Gender</option>
                   <option>Male</option>
@@ -219,24 +220,19 @@ export default function PassengerInfo() {
           <div className="tb-card">
             <h3>Contact Details</h3>
             <p className="tb-muted">Ticket & updates will be sent here</p>
-
             <div className="tb-form-grid">
               <input
                 placeholder="Mobile Number"
                 maxLength="10"
                 className={!isContactValid && contact.phone ? "error" : ""}
                 value={contact.phone}
-                onChange={(e) =>
-                  setContact({ ...contact, phone: e.target.value })
-                }
+                onChange={(e) => setContact({ ...contact, phone: e.target.value })}
               />
               <input
                 placeholder="Email ID"
                 className={!isContactValid && contact.email ? "error" : ""}
                 value={contact.email}
-                onChange={(e) =>
-                  setContact({ ...contact, email: e.target.value })
-                }
+                onChange={(e) => setContact({ ...contact, email: e.target.value })}
               />
             </div>
           </div>
@@ -254,7 +250,6 @@ export default function PassengerInfo() {
                 onChange={() => setTripAssured(!tripAssured)}
               />
             </div>
-
             {tripAssured && (
               <div className="tb-assured-box">
                 ✔ 150% refund on cancellation<br />
@@ -313,7 +308,7 @@ export default function PassengerInfo() {
               disabled={!isAllPassengersValid || !isContactValid}
               onClick={handleContinue}
             >
-              Pay ₹{finalAmount} 
+              Pay ₹{finalAmount}
             </button>
           </div>
         </div>
