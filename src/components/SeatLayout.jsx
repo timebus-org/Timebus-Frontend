@@ -4,201 +4,174 @@ import { useNavigate } from "react-router-dom";
 import SteeringIcon from "../assets/steering.jpg";
 
 export default function SeatLayout({ bus }) {
-  const [selected, setSelected] = useState([]);
-  const [locking, setLocking] = useState(false);
   const navigate = useNavigate();
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  if (!bus || !bus.seats) return <div>No seat data</div>;
+  if (!bus || !bus.seats || bus.seats.length === 0) {
+    return <div>No seat data available</div>;
+  }
 
   const getSeatPrice = (seat) =>
-    seat.price || (seat.type?.toLowerCase() === "sleeper" ? bus.fare + 200 : bus.fare);
+    seat.price != null
+      ? seat.price
+      : seat.type?.toLowerCase() === "sleeper"
+      ? bus.fare + 200
+      : bus.fare;
 
   const toggleSeat = (seat) => {
-    if (locking) return;
-    if (seat.status === "booked" || seat.status === "waiting") return;
+    if (seat.status !== "available") return;
 
-    setSelected((prev) =>
-      prev.includes(seat.seatNumber)
-        ? prev.filter((s) => s !== seat.seatNumber)
-        : [...prev, seat.seatNumber]
-    );
+    setSelectedSeats((prev) => {
+      const exists = prev.find((s) => s.seatNumber === seat.seatNumber);
+      return exists
+        ? prev.filter((s) => s.seatNumber !== seat.seatNumber)
+        : [...prev, seat];
+    });
   };
 
-  const decks = [...new Set(bus.seats.map((s) => s.deck || "lower"))];
+  /* ================= BOOK NOW ================= */
+  const handleBookNow = async () => {
+    if (selectedSeats.length === 0) {
+      alert("No seats selected!");
+      return;
+    }
 
-  const seatsByDeck = decks.map((deck) => {
-    const seatsInDeck = bus.seats.filter((s) => (s.deck || "lower") === deck);
-    const rows = [...new Set(seatsInDeck.map((s) => s.row))].sort((a, b) => a - b);
-    const seatsByRow = rows.map((row) => ({
-      row,
-      seats: seatsInDeck
-        .filter((s) => s.row === row)
-        .sort((a, b) => a.col - b.col),
-    }));
-    return { deck, seatsByRow };
-  });
+    setLoading(true);
 
+    try {
+      const seatsToLock = selectedSeats.map((s) => s.seatNumber);
+
+      await axios.post("http://localhost:5000/api/buses/lock-seat", {
+        busNumber: bus.busNumber,
+        seats: seatsToLock,
+      });
+
+      const selectedSeatDetails = selectedSeats.map((s) => ({
+        seatNumber: s.seatNumber,
+        type: s.type,
+        price: getSeatPrice(s),
+      }));
+
+      const totalPrice = selectedSeatDetails.reduce(
+        (sum, s) => sum + s.price,
+        0
+      );
+
+      navigate("/passenger-info", {
+        state: {
+          busId: bus._id,
+          tripId: bus.tripId,
+          busName: bus.busName,
+          busType: bus.busType,
+          source: bus.from,
+          destination: bus.to,
+          journeyDate: bus.journeyDate,
+          boardingPoint: bus.boardingPoints?.[0],
+          droppingPoint: bus.droppingPoints?.[0],
+          departureTime: bus.departureTime,
+          arrivalTime: bus.arrivalTime,
+          duration: bus.duration,
+          selectedSeats: selectedSeatDetails,
+          totalPrice,
+        },
+      });
+    } catch (err) {
+      alert("Seat locking failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ================= RENDER SEAT ================= */
   const renderSeat = (seat) => {
-    const isSelected = selected.includes(seat.seatNumber);
-    const isBooked = seat.status === "booked";
-    const isWaiting = seat.status === "waiting";
-    const isSleeper = seat.type?.toLowerCase() === "sleeper";
+    const isSelected = selectedSeats.some(
+      (s) => s.seatNumber === seat.seatNumber
+    );
 
-    const bgColor = isBooked
-      ? "#c62828"
-      : isWaiting
-      ? "#f9a825"
-      : isSelected
-      ? "#1db954"
-      : "#eeeeee";
+    const bg =
+      seat.status === "booked"
+        ? "#c62828"
+        : isSelected
+        ? "#2e7d32"
+        : "#eee";
 
     return (
       <div
         key={seat.seatNumber}
-        onPointerDown={(e) => {
-          e.preventDefault();
-          toggleSeat(seat);
+        onClick={() => toggleSeat(seat)}
+        style={{
+          width: 60,
+          height: 60,
+          background: bg,
+          borderRadius: 8,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          cursor: seat.status === "available" ? "pointer" : "not-allowed",
+          fontWeight: 700,
+          fontSize: 12,
+          color: seat.status === "booked" ? "#fff" : "#000",
+          boxShadow: isSelected ? "0 0 10px rgba(46,125,50,0.6)" : "0 2px 5px rgba(0,0,0,0.15)",
+          transition: "0.2s",
         }}
         title={`Seat ${seat.seatNumber} | ₹${getSeatPrice(seat)}`}
-        style={{
-          gridColumn: isSleeper ? "span 2" : "span 1",
-          height: isSleeper ? 32 : 44,
-          background: bgColor,
-          borderRadius: isSleeper ? 8 : 10,
-          border: "1px solid #999",
-          cursor: isBooked || locking ? "not-allowed" : "pointer",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          padding: 4,
-          fontSize: 10,
-          fontWeight: 700,
-          userSelect: "none",
-          boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
-          opacity: isBooked ? 0.6 : 1,
-          touchAction: "manipulation",
-          pointerEvents: locking ? "none" : "auto",
-        }}
       >
-        <div style={{ textAlign: "center" }}>{seat.seatNumber}</div>
-        <div style={{ fontSize: 9, textAlign: "center", color: "#2e7d32" }}>
-          ₹{getSeatPrice(seat)}
-        </div>
+        {seat.seatNumber}
+        <small style={{ fontSize: 10 }}>₹{getSeatPrice(seat)}</small>
       </div>
     );
   };
 
-  const total = selected.reduce((sum, seatNo) => {
-    const seat = bus.seats.find((s) => s.seatNumber === seatNo);
-    return sum + (seat ? getSeatPrice(seat) : 0);
-  }, 0);
-
-  async function handleBookNow() {
-    if (selected.length === 0 || locking) return;
-
-    try {
-      setLocking(true);
-
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/buses/lock-seat`,
-        {
-          busNumber: bus.busNumber,
-          seats: selected,
-        }
-      );
-
-      const selectedSeatDetails = bus.seats
-        .filter((s) => selected.includes(s.seatNumber))
-        .map((s) => ({
-          seatNumber: s.seatNumber,
-          type: s.type,
-          price: getSeatPrice(s),
-        }));
-
-      const totalPrice = selectedSeatDetails.reduce((sum, s) => sum + s.price, 0);
-
-      const bookingData = {
-        busId: bus._id,
-        tripId: bus._id,
-        busName: bus.busName,
-        source: bus.from,
-        destination: bus.to,
-        departureTime: bus.departureTime,
-        arrivalTime: bus.arrivalTime,
-        selectedSeats: selectedSeatDetails,
-        totalPrice,
-        lockUntil: res.data.lockUntil,
-        createdAt: Date.now(),
-      };
-
-      localStorage.setItem("bookingSession", JSON.stringify(bookingData));
-      navigate("/passenger-info", { state: bookingData });
-    } catch (err) {
-      alert("Seat locking failed. Please try again.");
-    } finally {
-      setLocking(false);
-    }
-  }
-
   return (
-    <div style={{ maxWidth: 420, margin: "0 auto", padding: 12 }}>
-      <div
-        style={{
-          border: "2px solid #ccc",
-          borderRadius: 20,
-          background: "#fff",
-          padding: 16,
-          position: "relative",
-        }}
-      >
-        <div style={{ position: "absolute", left: 12, top: 16 }}>
-          <img src={SteeringIcon} alt="Driver" width={20} />
+    <div style={{ maxWidth: 520, margin: "auto", padding: 16 }}>
+      {/* LEGEND */}
+      <div style={{ display: "flex", gap: 20, marginBottom: 16, fontSize: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ width: 18, height: 18, background: "#eee", border: "1px solid #999", borderRadius: 4 }} />
+          Available
         </div>
-
-        <div style={{ paddingLeft: 60 }}>
-          {seatsByDeck.map(({ deck, seatsByRow }) => (
-            <div key={deck} style={{ marginBottom: 20 }}>
-              <h4 style={{ marginBottom: 8 }}>{deck} Deck</h4>
-
-              {seatsByRow.map(({ row, seats }) => (
-                <div
-                  key={row}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 56px) 32px repeat(1, 56px)",
-                    gap: 6,
-                    marginBottom: 6,
-                  }}
-                >
-                  {seats.map(renderSeat)}
-                </div>
-              ))}
-            </div>
-          ))}
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ width: 18, height: 18, background: "#2e7d32", borderRadius: 4 }} />
+          Selected
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ width: 18, height: 18, background: "#c62828", borderRadius: 4 }} />
+          Booked
         </div>
       </div>
 
-      <div style={{ marginTop: 12, fontWeight: 600 }}>
-        Seats: {selected.join(", ") || "None"} <br />
-        Total: ₹{total}
+      <div style={{ padding: 20, border: "2px solid #ccc", borderRadius: 12, background: "#fff", position: "relative" }}>
+        <img src={SteeringIcon} alt="" width={30} style={{ position: "absolute", left: 20, top: 20 }} />
+
+        <div style={{ marginTop: 40, display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {bus.seats.map(renderSeat)}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 12, fontWeight: 600, background: "#fafafa", padding: 10, borderRadius: 6 }}>
+        Selected Seats: {selectedSeats.map((s) => s.seatNumber).join(", ") || "None"}
+        <br />
+        Total: ₹{selectedSeats.reduce((sum, s) => sum + getSeatPrice(s), 0)}
       </div>
 
       <button
         onClick={handleBookNow}
-        disabled={selected.length === 0 || locking}
+        disabled={loading || selectedSeats.length === 0}
         style={{
           marginTop: 12,
           width: "100%",
           padding: 12,
-          background: locking ? "#999" : "#28a745",
+          background: loading || selectedSeats.length === 0 ? "#aaa" : "#28a745",
           color: "#fff",
           border: "none",
-          borderRadius: 8,
-          fontSize: 15,
+          borderRadius: 6,
           fontWeight: 700,
+          cursor: loading || selectedSeats.length === 0 ? "not-allowed" : "pointer",
         }}
       >
-        {locking ? "Locking Seats..." : "Book Now"}
+        {loading ? "Locking..." : "Book Now"}
       </button>
     </div>
   );
