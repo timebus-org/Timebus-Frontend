@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaUsers, FaSnowflake } from "react-icons/fa";
-import { supabase } from "../lib/supabase"; // ✅ Make sure this is imported
+import { supabase } from "../lib/supabase";
 import "./carSearchResults.css";
 
 const allCabs = [
@@ -59,32 +59,32 @@ export default function CarSearchResults() {
     from = "Pickup Location",
     to = "Drop Location",
     date = "Select Date",
+    time = "Select Time",
     tripType: initialTripType = "outstation",
   } = searchData;
 
-  const [tripType, setTripType] = useState(initialTripType);
+  const [tripType] = useState(initialTripType); // tripType from previous search
 
   // 🔹 Filters state
   const [filters, setFilters] = useState({
     sedan: false,
     suv: false,
-    ac: false,
   });
 
   // 🔹 Filter logic
   const filteredCabs = allCabs.filter((cab) => {
-    if (filters.sedan && cab.type !== "Sedan") return false;
-    if (filters.suv && cab.type !== "SUV") return false;
-    if (filters.ac && !cab.ac) return false;
+    if (filters.sedan && !filters.suv && cab.type !== "Sedan") return false;
+    if (filters.suv && !filters.sedan && cab.type !== "SUV") return false;
+    if (filters.sedan && filters.suv) return true; // show all if both selected
+    if (!filters.sedan && !filters.suv) return true; // show all if none selected
     return true;
   });
 
-  // 🔹 BOOK NOW wrapper to handle async
+  // 🔹 Handle booking
   const handleBookWrapper = (cab) => {
     handleBook(cab).catch((err) => console.error(err));
   };
 
-  // 🔹 Handle booking redirect
   const handleBook = async (cab) => {
     const cabData = {
       cab,
@@ -93,18 +93,17 @@ export default function CarSearchResults() {
       from,
       to,
       date,
+      time, // ✅ Pass time to BookingSummary
     };
 
-    // 🔹 Get current session directly from Supabase
+    // 🔹 Get current session
     const { data: { session } } = await supabase.auth.getSession();
 
     if (!session) {
-      // Not logged in → redirect to login with preserved cab data
       navigate("/login", {
         state: { redirectTo: "/bookingSummary", cabData },
       });
     } else {
-      // Logged in → go directly to booking summary
       navigate("/bookingSummary", { state: cabData });
     }
   };
@@ -115,7 +114,7 @@ export default function CarSearchResults() {
       <div className="results-summary">
         <div>
           <h3>{from} → {to}</h3>
-          <p>{date} • {tripType === "local" ? "Local Trip" : "Outstation Trip"}</p>
+          <p>{date} • {time} • {tripType === "local" ? "Local Trip" : "Outstation Trip"}</p>
         </div>
       </div>
 
@@ -127,6 +126,7 @@ export default function CarSearchResults() {
           <label>
             <input
               type="checkbox"
+              checked={filters.sedan}
               onChange={() => setFilters(f => ({ ...f, sedan: !f.sedan }))}
             />
             Sedan
@@ -135,17 +135,10 @@ export default function CarSearchResults() {
           <label>
             <input
               type="checkbox"
+              checked={filters.suv}
               onChange={() => setFilters(f => ({ ...f, suv: !f.suv }))}
             />
             SUV
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              onChange={() => setFilters(f => ({ ...f, ac: !f.ac }))}
-            />
-            AC Only
           </label>
         </div>
 
@@ -195,7 +188,6 @@ export default function CarSearchResults() {
                     {tripType === "local" ? "pkg" : "km"}
                   </h3>
 
-                  {/* ✅ BOOK NOW BUTTON */}
                   <button onClick={() => handleBookWrapper(cab)}>BOOK NOW</button>
                 </div>
               </div>
