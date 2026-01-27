@@ -6,19 +6,16 @@ import { FaSnowflake, FaChair, FaBed, FaFire, FaFilter } from "react-icons/fa";
 import SeatLayout from "../components/SeatLayout";
 import "./Results.css";
 
-/* ===================== FILTER COMPONENT ===================== */
 function BusFilter({ buses, onFilter, toggleMobile }) {
   const [busType, setBusType] = useState("");
 
   useEffect(() => {
-    let filtered = [...buses];
-
+    let filtered = [...(buses || [])];
     if (busType) {
       filtered = filtered.filter(b =>
         b.busType?.toLowerCase().includes(busType.toLowerCase())
       );
     }
-
     onFilter(filtered);
   }, [busType, buses, onFilter]);
 
@@ -26,9 +23,7 @@ function BusFilter({ buses, onFilter, toggleMobile }) {
     <div className="filterContent">
       <div className="filterHeader">
         <h4>Bus Type</h4>
-        {toggleMobile && (
-          <button className="closeBtn" onClick={toggleMobile}>✕</button>
-        )}
+        {toggleMobile && <button className="closeBtn" onClick={toggleMobile}>✕</button>}
       </div>
 
       {[
@@ -49,7 +44,6 @@ function BusFilter({ buses, onFilter, toggleMobile }) {
   );
 }
 
-/* ===================== RESULTS PAGE ===================== */
 export default function Results() {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -59,48 +53,43 @@ export default function Results() {
   const [openBusId, setOpenBusId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
+  const [seatSelections, setSeatSelections] = useState({});
 
-useEffect(() => {
-  const fetchBuses = async () => {
-    try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/buses/search?${params.toString()}`);
 
-      setBuses(res.data);
-      setFilteredBuses(res.data);
-    } catch (err) {
-      console.error("Fetch buses failed:", err);
-      setBuses([]);
-      setFilteredBuses([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchBuses();
-}, [search]);
-
+  useEffect(() => {
+    const fetchBuses = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/buses/search?${params.toString()}`);
+        setBuses(res.data || []);
+        setFilteredBuses(res.data || []);
+      } catch {
+        setBuses([]);
+        setFilteredBuses([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBuses();
+  }, [search]);
 
   if (loading) return <div className="loading">Loading buses…</div>;
 
   return (
     <div className="resultsPage">
       <aside className={`filterSidebar ${showFilter ? "open" : ""}`}>
-        <BusFilter
-          buses={buses}
-          onFilter={setFilteredBuses}
-          toggleMobile={() => setShowFilter(false)}
-        />
+        <BusFilter buses={buses} onFilter={setFilteredBuses} toggleMobile={() => setShowFilter(false)} />
       </aside>
 
       <main className="resultsMain">
         <div className="mobileFilterToggle">
-          <button onClick={() => setShowFilter(true)}>
-            <FaFilter /> Filter
-          </button>
+          <button onClick={() => setShowFilter(true)}><FaFilter /> Filter</button>
         </div>
 
-        {filteredBuses.map(bus => {
-          const seatsLeft =
-            bus.seats?.filter(s => s.status === "available").length || 0;
+        {(filteredBuses || []).map(bus => {
+          const seatsLeft = (bus.seats || []).filter(s =>
+            s.status.toLowerCase() === "available" &&
+            (!s.lockedUntil || new Date(s.lockedUntil) < new Date())
+          ).length;
 
           return (
             <motion.div key={bus._id} layout className="busCard">
@@ -114,40 +103,40 @@ useEffect(() => {
                 <div className="busTiming">
                   <div className="timeBlock">
                     <b>{bus.departureTime}</b>
-                    <p>{bus.from}</p>
+                    <p className="city">{bus.from}</p>
+                    <div className="points">{(bus.boardingPoints || []).map((p,i) => <span key={i}>{p.location} ({p.time})</span>)}</div>
                   </div>
+
                   <div className="duration">{bus.duration}</div>
+
                   <div className="timeBlock">
                     <b>{bus.arrivalTime}</b>
-                    <p>{bus.to}</p>
+                    <p className="city">{bus.to}</p>
+                    <div className="points">{(bus.droppingPoints || []).map((p,i) => <span key={i}>{p.location} ({p.time})</span>)}</div>
                   </div>
                 </div>
 
                 <div className="fareSection">
-                  <div className="price">
-                    {bus.originalFare && <s>₹{bus.originalFare}</s>}
-                    <b>₹{bus.fare}</b>
-                  </div>
-                  <button
-                    className="selectSeatsBtn"
-                    onClick={() =>
-                      setOpenBusId(openBusId === bus._id ? null : bus._id)
-                    }
-                  >
-                    Select Seats
-                  </button>
+                  <div className="price">{bus.originalFare && <s>₹{bus.originalFare}</s>}<b>₹{bus.fare}</b></div>
+                  <button className="selectSeatsBtn" onClick={() => setOpenBusId(openBusId === bus._id ? null : bus._id)}>Select Seats</button>
                   <small>{seatsLeft} seats left</small>
                 </div>
               </div>
 
               <AnimatePresence>
                 {openBusId === bus._id && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                  >
-                    <SeatLayout bus={bus} />
+                  <motion.div initial={{height:0, opacity:0}} animate={{height:"auto", opacity:1}} exit={{height:0, opacity:0}}>
+                    <SeatLayout
+  bus={bus}
+  selectedSeats={seatSelections[bus._id] || []}
+  setSelectedSeats={(seats) =>
+    setSeatSelections((prev) => ({
+      ...prev,
+      [bus._id]: seats,
+    }))
+  }
+/>
+
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -158,6 +147,3 @@ useEffect(() => {
     </div>
   );
 }
-
-
-
