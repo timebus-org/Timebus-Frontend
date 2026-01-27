@@ -7,7 +7,8 @@ import {
   FaCar,
 } from "react-icons/fa";
 import "./CarBooking.css";
-import carImage from "./cab-hero.jpg";
+import carImage from "../assets/cab-hero.png";
+
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 
@@ -32,6 +33,16 @@ const cities = [
   "Srinagar","Jammu",
   "Guwahati","Shillong",
   "Agartala","Aizawl","Imphal","Gangtok"
+];
+
+/* ✅ ALL CHENNAI PLACES */
+const chennaiPlaces = [
+  "T. Nagar","Anna Nagar","Velachery","Adyar","Guindy",
+  "Mylapore","Chromepet","Tambaram","Kodambakkam","Sholinganallur",
+  "Nungambakkam","Egmore","Royapettah","Purasawalkam","Perambur",
+  "Vadapalani","Thiruvanmiyur","Kilpauk","Saidapet","Kotturpuram",
+  "Ayanavaram","Chetpet","Teynampet","Pazhavanthangal","Medavakkam",
+  "Pallavaram","Guindy Industrial Estate","Alwarpet","Kolathur","Ambattur"
 ];
 
 /* ✅ TIME UTILITIES */
@@ -63,7 +74,6 @@ export default function CarBooking() {
   const [tripType, setTripType] = useState("outstation");
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
-  const [localCity, setLocalCity] = useState("");
   const [fromPlace, setFromPlace] = useState("");
   const [toPlace, setToPlace] = useState("");
   const [date, setDate] = useState("");
@@ -79,13 +89,27 @@ export default function CarBooking() {
     }
   }, [isDesktop, time]);
 
+  /* ✅ SEARCH BUTTON HANDLER WITH VALIDATION */
   const handleSearch = () => {
+    if (tripType === "outstation") {
+      if (!fromCity || !toCity || !date || !time) {
+        alert("Please fill all fields to continue!");
+        return;
+      }
+    } else {
+      // Local trip validation
+      if (!fromPlace || !toPlace || !date || !time) {
+        alert("Please fill all local trip details!");
+        return;
+      }
+    }
+
     navigate("/carSearchResults", {
       state: {
         tripType,
         from: tripType === "local" ? fromPlace : fromCity,
         to: tripType === "local" ? toPlace : toCity,
-        city: localCity,
+        city: tripType === "local" ? "Chennai" : "",
         date,
         time,
       },
@@ -140,78 +164,75 @@ export default function CarBooking() {
           {/* LOCAL */}
           {tripType === "local" && (
             <>
+              {/* FIXED CITY */}
               <div className="input-box">
                 <FaMapMarkerAlt />
-                <select value={localCity} onChange={e => setLocalCity(e.target.value)}>
-                  <option value="">Select City</option>
-                  {cities.map(c => <option key={c}>{c}</option>)}
+                <input value="Chennai" disabled />
+              </div>
+
+              {/* FROM PLACE */}
+              <div className="input-box">
+                <FaMapMarkerAlt />
+                <select value={fromPlace} onChange={e => setFromPlace(e.target.value)}>
+                  <option value="">Select From Place</option>
+                  {chennaiPlaces.map(place => (
+                    <option key={place} value={place}>{place}</option>
+                  ))}
                 </select>
               </div>
 
+              {/* TO PLACE */}
               <div className="input-box">
                 <FaMapMarkerAlt />
-                <input
-                  placeholder="From Place"
-                  value={fromPlace}
-                  onChange={e => setFromPlace(e.target.value)}
-                />
-              </div>
-
-              <div className="input-box">
-                <FaMapMarkerAlt />
-                <input
-                  placeholder="To Place"
-                  value={toPlace}
-                  onChange={e => setToPlace(e.target.value)}
-                />
+                <select value={toPlace} onChange={e => setToPlace(e.target.value)}>
+                  <option value="">Select To Place</option>
+                  {chennaiPlaces.map(place => (
+                    <option key={place} value={place}>{place}</option>
+                  ))}
+                </select>
               </div>
             </>
           )}
 
-         <div className="date-time-row">
+          {/* DATE & TIME */}
+          <div className="date-time-row">
+            <div className="input-box half">
+              <FaCalendarAlt />
+              <Flatpickr
+                value={date}
+                options={{
+                  dateFormat: "d-m-Y",
+                  allowInput: true,
+                  minDate: "today",
+                }}
+                placeholder="DD-MM-YYYY"
+                onChange={(_, dateStr) => setDate(dateStr)}
+                className="date-input"
+              />
+            </div>
 
-  {/* DATE */}
-  <div className="input-box half">
-    <FaCalendarAlt />
-    <Flatpickr
-      value={date}
-      options={{
-        dateFormat: "d-m-Y",
-        allowInput: true,
-        minDate: "today",
-      }}
-      placeholder="DD-MM-YYYY"
-      onChange={(_, dateStr) => setDate(dateStr)}
-      className="date-input"
-    />
-  </div>
-
-  {/* TIME */}
-  <div className="input-box half">
-    <FaClock />
-    {isDesktop ? (
-      <select
-        value={time}
-        onChange={e => setTime(e.target.value)}
-        className="time-dropdown small-input"
-      >
-        {timeSlots.map(slot => (
-          <option key={slot} value={slot}>{slot}</option>
-        ))}
-      </select>
-    ) : (
-      <input
-        type="time"
-        value={time}
-        onChange={e => setTime(e.target.value)}
-        className="small-input"
-      />
-    )}
-  </div>
-
-</div>
-
-
+            <div className="input-box half">
+              <FaClock />
+              {isDesktop ? (
+                <select
+                  value={time}
+                  onChange={e => setTime(e.target.value)}
+                  className="time-dropdown small-input"
+                >
+                  {timeSlots.map(slot => (
+                    <option key={slot} value={slot}>{slot}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="time"
+                  value={time}
+                  onChange={e => setTime(e.target.value)}
+                  className="small-input"
+                />
+              )}
+            </div>
+          </div>
 
           <button className="search-btn" onClick={handleSearch}>
             SEARCH CABS
