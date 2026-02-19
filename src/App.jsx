@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -8,23 +9,34 @@ import AuthCallback from "./pages/AuthCallback";
 import Results from "./pages/Results";
 import SeatBooking from "./pages/SeatBooking";
 import Payment from "./pages/Payment";
-import TrainComingSoon from "./pages/TrainComingSoon";
-import FlightComingSoon from "./pages/FlightComingSoon";
 import ContactUs from "./pages/ContactUs";
 import PassengerInfo from "./pages/PassengerInfo";
 import CancelTicket from "./pages/CancelTicket";
-import RescheduleTicket from "./pages/RescheduleTicket";
 import Bookings from "./pages/Bookings";
 import PrintTicket from "./pages/PrintTicket";
 import BookingSuccess from "./pages/success";
 import CabBookingPage from "./pages/CarBooking";
 import CarSearchResults from "./pages/carSearchResults";
 import BookingSummary from "./pages/BookingSummary";
+import RequestCreated from "./pages/RequestCreated";
+import PaymentFailed from "./pages/PaymentFailed";
+import Success from "./pages/Success"; 
+import Ticket from "./pages/Ticket";
+import TicketSuccess from "./pages/TicketSuccess";
 export default function App() {
   return (
     <BrowserRouter>
-      <Navbar />
+      <AppContent />
+    </BrowserRouter>
+  );
+}
 
+function AppContent() {
+ const location = useLocation();
+
+  return (
+    <>
+      <Navbar />
       <Routes>
         {/* HOME */}
         <Route path="/" element={<Home />} />
@@ -35,15 +47,19 @@ export default function App() {
         <Route path="/CarBooking" element={<CabBookingPage />} />
         <Route path="/carSearchResults" element={<CarSearchResults />} />
         <Route path="/BookingSummary" element={<BookingSummary />} />
+        <Route path="/request-created" element={<RequestCreated />} />
 
         {/* AUTH */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Register />} />
         <Route path="/auth-callback" element={<AuthCallback />} />
+        <Route path="/payment-failed" element={<PaymentFailed />} />
+        <Route path="/booking-success" element={<BookingSuccess />} />
+        <Route path="/booking-success" element={<Success />} />
 
         {/* TICKETS */}
-        <Route path="/train-tickets" element={<TrainComingSoon />} />
-        <Route path="/flight-tickets" element={<FlightComingSoon />} />
+        <Route path="/ticket-success" element={<TicketSuccess />} />
+        <Route path="/ticket" element={<Ticket />} />
 
         {/* STATIC */}
         <Route path="/contact-us" element={<ContactUs />} />
@@ -57,12 +73,12 @@ export default function App() {
         {/* PAYMENT */}
         <Route path="/payment" element={<Payment />} />
         <Route path="/cancel-ticket" element={<CancelTicket />} />
-<Route path="/reschedule-ticket" element={<RescheduleTicket />} />
-<Route path="/bookings" element={<Bookings />} />
+        <Route path="/bookings" element={<Bookings />} />
       </Routes>
 
-      <Footer />
-    </BrowserRouter>
+      {(location.pathname === "/" ||
+  location.pathname === "/bus-tickets") && <Footer />}
+
+    </>
   );
 }
-

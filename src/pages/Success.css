@@ -1,284 +1,127 @@
-.success-page {
+/* ===== PAGE BACKGROUND ===== */
+.success-bg {
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f1f5f9;
-}
-
-.success-card {
-  background: #fff;
-  padding: 32px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  text-align: center;
-}
-
-.success-card h1 {
-  color: #16a34a;
-  margin-bottom: 6px;
-}
-
-.ticket {
-  width: 360px;
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 14px;
-  background: #f8fafc;
-  border: 2px dashed #2563eb;
-  text-align: left;
-  font-size: 14px;
-}
-
-.ticket-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.badge {
-  background: #16a34a;
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-}
-
-.ticket-row {
-  display: flex;
-  justify-content: space-between;
-  margin: 6px 0;
-}
-
-.passenger-line {
-  display: flex;
-  justify-content: space-between;
-  margin: 4px 0;
-}
-
-.total {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.divider {
-  height: 1px;
-  background: #e5e7eb;
-  margin: 10px 0;
-}
-
-.redirect-text {
-  font-size: 13px;
-  color: #64748b;
-  margin-top: 12px;
-}
-.success-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 16px;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* ===== CARD ===== */
 .success-card {
+  width: 100%;
+  max-width: 420px;
   background: #ffffff;
-  padding: 40px;
   border-radius: 18px;
+  padding: 28px 24px 32px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
   text-align: center;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  animation: fadeUp 0.6s ease-out;
 }
 
-.success-card h1 {
-  margin-bottom: 10px;
-  color: #16a34a;
-}
-
-.redirect-text {
-  margin-top: 12px;
-  color: #374151;
-}
-/* Success.css */
-
-/* Overall page */
-.success-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 30px 20px;
-  background: #f5f6fa;
-  font-family: "Roboto", sans-serif;
-  color: #1e1e1e;
-  min-height: 100vh;
-}
-
-.success-title {
-  color: #28a745;
-  font-size: 28px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.success-sub {
-  font-size: 16px;
-  margin-bottom: 20px;
-  text-align: center;
-  color: #555;
-}
-
-.redirect-text {
-  margin-top: 20px;
-  font-size: 14px;
-  color: #777;
-}
-
-/* Ticket container */
-.ticket {
-  width: 100%;
-  max-width: 600px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-top: 20px;
-  overflow: hidden;
-}
-
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.header-left {
+/* ===== ICON ===== */
+.success-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00c853, #2ecc71);
   display: flex;
   align-items: center;
-  gap: 15px;
-}
-
-.logo {
-  width: 60px;
-  height: auto;
-}
-
-.etype {
-  background: #28a745;
+  justify-content: center;
+  font-size: 34px;
   color: #fff;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 14px;
+  box-shadow: 0 10px 20px rgba(0, 200, 83, 0.35);
 }
 
-.header-right {
-  font-size: 12px;
-  text-align: right;
-  line-height: 1.4;
+/* ===== HEADINGS ===== */
+.success-card h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+}
+
+/* ===== MESSAGE ===== */
+.success-msg {
+  font-size: 14.5px;
   color: #555;
+  line-height: 1.6;
+  margin-bottom: 20px;
 }
 
-/* Divider */
-hr {
-  border: none;
-  border-top: 1px solid #ddd;
-  margin: 15px 0;
+/* ===== TRIP DETAILS BOX ===== */
+.trip-box {
+  background: #f7f9fc;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  margin-bottom: 18px;
+  border: 1px solid #e6ebf2;
 }
 
-/* Route & Date */
-.route {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 5px;
-  text-align: center;
-  color: #1e1e1e;
-}
-
-.date {
+.trip-box p {
+  margin: 6px 0;
   font-size: 14px;
-  color: #555;
-  text-align: center;
-  margin-bottom: 15px;
+  color: #333;
 }
 
-/* Info table */
-.info {
+.trip-box b {
+  color: #000;
+}
+
+/* ===== NOTE ===== */
+.note {
+  font-size: 13.5px;
+  color: #666;
+  margin-bottom: 22px;
+}
+
+/* ===== BUTTON ===== */
+.success-card button {
   width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 15px;
+  padding: 13px 16px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 10px 20px rgba(21, 101, 192, 0.35);
 }
 
-.info td {
-  width: 50%;
-  vertical-align: top;
-  padding: 8px 0;
+.success-card button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(21, 101, 192, 0.45);
 }
 
-.label {
-  font-size: 12px;
-  color: #777;
-  margin-bottom: 3px;
+.success-card button:active {
+  transform: scale(0.98);
 }
 
-.value {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1e1e1e;
+/* ===== ANIMATION ===== */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* PNR & Fare */
-.pnr, .fare {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.fare b {
-  color: #28a745;
-}
-
-/* Terms */
-.terms {
-  font-size: 12px;
-  color: #555;
-}
-
-.terms ol {
-  padding-left: 18px;
-  margin-top: 5px;
-}
-
-.terms li {
-  margin-bottom: 4px;
-}
-
-/* Responsive */
-@media screen and (max-width: 650px) {
-  .ticket {
-    padding: 15px;
+/* ===== DESKTOP ENHANCEMENT ===== */
+@media (min-width: 768px) {
+  .success-card {
+    padding: 36px 32px 40px;
   }
 
-  .header-left {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .header-right {
-    text-align: left;
-    margin-top: 8px;
-  }
-
-  .route {
-    font-size: 18px;
-  }
-
-  .date {
-    font-size: 13px;
-  }
-
-  .value {
-    font-size: 13px;
+  .success-card h2 {
+    font-size: 24px;
   }
 }

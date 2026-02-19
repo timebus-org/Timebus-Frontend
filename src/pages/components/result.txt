@@ -1,0 +1,289 @@
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import "./Results.css";
+import { FaStar } from "react-icons/fa";
+import SeatLayoutModal from "../components/SeatLayoutModal";
+
+export default function Results() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const { buses, from, to, date } = location.state || {};
+  const tripList = buses?.availableTrips || [];
+
+  const [displayBuses, setDisplayBuses] = useState([]);
+  const [sortType, setSortType] = useState("default");
+  const [filterState, setFilterState] = useState({
+    AC: false,
+    Sleeper: false,
+    Seater: false
+  });
+  const [selectedBus, setSelectedBus] = useState(null);
+
+  useEffect(() => {
+    setDisplayBuses(tripList);
+  }, [tripList]);
+
+  if (!buses) {
+    return (
+      <div className="results-wrapper">
+        <h2>No search data found</h2>
+        <button onClick={() => navigate("/")}>Go Back</button>
+      </div>
+    );
+  }
+
+  /* ================= TIME HELPERS ================= */
+
+  // Normalize ANY time → minutes (handles 1380, 2359, "0230")
+  const toMinutes = (time) => {
+    if (time === null || time === undefined) return null;
+
+    const t = Number(time);
+
+    // already minutes
+    if (t < 1440) return t;
+
+    // HHMM
+    const h = Math.floor(t / 100);
+    const m = t % 100;
+    return h * 60 + m;
+  };
+
+  const formatTimeAMPM = (time) => {
+    const total = toMinutes(time);
+    if (total === null) return "--";
+
+    const minutes = total % 1440;
+    let h = Math.floor(minutes / 60);
+    let m = minutes % 60;
+
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+
+    return `${h}:${m.toString().padStart(2, "0")} ${ampm}`;
+  };
+
+  const calculateDuration = (dep, arr) => {
+    const depMin = toMinutes(dep);
+    const arrMin = toMinutes(arr);
+    if (depMin === null || arrMin === null) return "--";
+
+    let diff = arrMin - depMin;
+    if (diff < 0) diff += 1440;
+
+    const h = Math.floor(diff / 60);
+    const m = diff % 60;
+
+    return `${h}h ${m}m`;
+  };
+
+  /* ================= FARE HELPERS ================= */
+
+  const getFare = (bus) => {
+    if (!Array.isArray(bus?.seats)) return null;
+
+    const availableSeats = bus.seats.filter(
+      (s) => s.available === true && !isNaN(s.fare)
+    );
+
+    if (!availableSeats.length) return null;
+
+    return Math.min(...availableSeats.map((s) => Number(s.fare)));
+  };
+
+  const getBaseFare = (bus) => {
+    if (!Array.isArray(bus?.seats)) return null;
+
+    const availableSeats = bus.seats.filter(
+      (s) => s.available === true && !isNaN(s.baseFare)
+    );
+
+    if (!availableSeats.length) return null;
+
+    return Math.min(...availableSeats.map((s) => Number(s.baseFare)));
+  };
+
+  /* ================= RATING ================= */
+
+  const getRating = (bus) =>
+    bus.primo === "true" ? "4.5" : "4.0";
+
+  /* ================= FILTERS ================= */
+
+  useEffect(() => {
+    let filtered = [...tripList];
+
+    if (filterState.AC)
+      filtered = filtered.filter((b) => b.AC === "true");
+    if (filterState.Sleeper)
+      filtered = filtered.filter((b) => b.sleeper === "true");
+    if (filterState.Seater)
+      filtered = filtered.filter((b) => b.seater === "true");
+
+    setDisplayBuses(filtered);
+  }, [filterState, tripList]);
+
+  /* ================= SORT ================= */
+
+  const handleSort = (type) => {
+    setSortType(type);
+    let sorted = [...displayBuses];
+
+    if (type === "departure") {
+      sorted.sort(
+        (a, b) => toMinutes(a.departureTime) - toMinutes(b.departureTime)
+      );
+    }
+
+    if (type === "price") {
+      sorted.sort((a, b) => (getFare(a) || 0) - (getFare(b) || 0));
+    }
+
+    setDisplayBuses(sorted);
+  };
+/* ================= RESULT PAGE FARE ================= */
+
+const getResultFare = (bus) => {
+  // Priority order (based on RedBus APIs)
+  if (bus?.baseFare && !isNaN(bus.baseFare)) {
+    return Number(bus.baseFare);
+  }
+
+  if (bus?.fare && !isNaN(bus.fare)) {
+    return Number(bus.fare);
+  }
+
+  if (bus?.minFare && !isNaN(bus.minFare)) {
+    return Number(bus.minFare);
+  }
+
+  return null;
+};
+
+const getStrikedFare = (fare) => {
+  if (!fare) return null;
+  return Math.round(fare * 1.2); // 20% strike
+};
+
+  /* ================= UI ================= */
+
+  return (
+    <div className="results-wrapper">
+      <h2 className="results-title">
+        {from?.name} → {to?.name} ({date})
+      </h2>
+
+      <div className="results-layout">
+
+        {/* LEFT FILTERS */}
+        <div className="filters-panel">
+          <h4>FILTERS</h4>
+
+          {["AC", "Sleeper", "Seater"].map((key) => (
+            <label key={key}>
+              <input
+                type="checkbox"
+                checked={filterState[key]}
+                onChange={() =>
+                  setFilterState({ ...filterState, [key]: !filterState[key] })
+                }
+              />
+              {key}
+            </label>
+          ))}
+        </div>
+
+        {/* RESULTS LIST */}
+        <div className="results-list">
+          <div className="results-controls">
+            <select value={sortType} onChange={(e) => handleSort(e.target.value)}>
+              <option value="default">Sort</option>
+              <option value="departure">Departure</option>
+              <option value="price">Lowest Price</option>
+            </select>
+
+            <h3>{displayBuses.length} Buses Found</h3>
+          </div>
+
+          {displayBuses.map((bus) => {
+            const fare = getResultFare(bus);
+const baseFare = getStrikedFare(fare);
+
+
+            return (
+              <div key={bus.id} className="bus-card">
+                <div className="bus-row">
+
+                  <div className="bus-info">
+                    <h3>{bus.travels}</h3>
+                    <p>{bus.busType}</p>
+
+                    <div className="rating">
+                      <FaStar />
+                      <span>{getRating(bus)}</span>
+                    </div>
+
+                    <p className="seats-left">
+                      {bus.availableSeats} Seats Available
+                    </p>
+                  </div>
+
+                  <div className="bus-time">
+                    <strong>{formatTimeAMPM(bus.departureTime)}</strong>
+                    <p>Departure</p>
+                  </div>
+
+                  <div className="bus-duration">
+                    <strong>
+                      {calculateDuration(bus.departureTime, bus.arrivalTime)}
+                    </strong>
+                    <p>Duration</p>
+                  </div>
+
+                  <div className="bus-time">
+                    <strong>{formatTimeAMPM(bus.arrivalTime)}</strong>
+                    <p>Arrival</p>
+                  </div>
+
+                  <div className="bus-price">
+  {fare ? (
+    <>
+      <span className="final-fare">₹{fare}</span>
+      <span className="onwards-text">Onwards</span>
+    </>
+  ) : (
+    <span className="final-fare">₹--</span>
+  )}
+</div>
+
+
+                    {/* DO NOT TOUCH */}
+                    <button onClick={() => setSelectedBus(bus)}>
+                      Select Seats
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {selectedBus && (
+        <SeatLayoutModal
+          bus={selectedBus}
+          from={from}
+          to={to}
+          date={date}
+          onClose={() => setSelectedBus(null)}
+        />
+      )}
+
+      <button className="back-btn" onClick={() => navigate("/")}>
+        Back to Search
+      </button>
+    </div>
+  );
+}

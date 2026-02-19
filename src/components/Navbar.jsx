@@ -1,226 +1,196 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { FaUserCircle, FaPhoneAlt, FaClipboardList } from "react-icons/fa";
 import { supabase } from "../supabaseClient";
 
 import logo from "../assets/logo.png";
 import busIcon from "../assets/bus.png";
-import trIcon from "../assets/train.png";
-import flIcon from "../assets/flight.png";
 import cbIcon from "../assets/cab.png";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("bus"); // "bus" or "cab"
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
+  const location = useLocation();
 
-  // ✅ Supabase auth (correct way)
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null);
+      setOpen(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const close = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, []);
+
   const logout = async () => {
     await supabase.auth.signOut();
-    setUser(null);
     setOpen(false);
     navigate("/login");
   };
 
-  const name =
-    user?.user_metadata?.display_name ||
-    user?.user_metadata?.full_name ||
-    user?.email;
+  const registeredName = user?.user_metadata?.full_name;
+
+  // Pages for auto tab highlight
+  const busPages = ["/", "/bus-tickets", "/bus-search", "/booking-summary", "/cancel-ticket", "/reschedule-ticket"];
+  const cabPages = ["/CarBooking", "/cab-search", "/cab-summary", "/cab-cancel", "/cab-reschedule"];
+
+  useEffect(() => {
+    if (cabPages.includes(location.pathname)) setActiveTab("cab");
+    else if (busPages.includes(location.pathname)) setActiveTab("bus");
+  }, [location.pathname]);
 
   return (
-    <nav
-      style={{
-        background: "#ffffff",
-        padding: "5px 33px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        borderBottom: "1px solid #e6eaf0",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-        fontFamily: "Inter, system-ui, sans-serif",
-      }}
-    >
-      {/* LEFT BRAND */}
-      <div style={{ display: "flex", alignItems: "center", gap: "50px" }}>
-        <Link to="/">
-          <img src={logo} alt="Logo" style={{ height: "60px" }} />
-        </Link>
+    <>
+      {/* ===== Navbar Top ===== */}
+      <nav className="navBar">
+        <div className="leftWrap">
+          <Link to="/">
+            <img src={logo} alt="Logo" className="logo" />
+          </Link>
 
-        {/* NAV ITEMS */}
-        <div style={{ display: "flex", gap: "35px" }}>
-          <NavLink to="/bus-tickets" style={navActive}>
-            <div style={navItem}>
-              <img src={busIcon} width="28" />
+          {/* Desktop Tabs: only show above 600px */}
+          <div className="tabGroup">
+            <div
+              className={`tabItem ${activeTab === "bus" ? "active" : ""}`}
+              onClick={() => { setActiveTab("bus"); navigate("/bus-tickets"); }}
+            >
+              <img src={busIcon} alt="Bus" className="tabIcon" />
               <span>Bus</span>
+              <span className="underline" />
             </div>
-          </NavLink>
+            <div
+              className={`tabItem ${activeTab === "cab" ? "active" : ""}`}
+              onClick={() => { setActiveTab("cab"); navigate("/CarBooking"); }}
+            >
+              <img src={cbIcon} alt="Cab" className="tabIcon" />
+              <span>Cabs</span>
+              <span className="underline" />
+            </div>
+          </div>
+        </div>
 
-          <NavLink to="/train-tickets" style={navActive}>
-            <div style={navItem}>
-              <img src={trIcon} width="35" />
-              <span>Train</span>
-            </div>
-          </NavLink>
+        <div className="rightWrap">
+          <Link to="/contact-us" className="topLink">
+            <FaPhoneAlt /> <span className="hide-sm">Help</span>
+          </Link>
+          <Link to="/print-ticket" className="topLink">
+            <FaClipboardList /> <span className="hide-sm">Print Ticket</span>
+          </Link>
 
-          <NavLink to="/CarBooking" style={navActive}>
-            <div style={navItem}>
-              <img src={cbIcon} width="36" />
-              <span>Cab</span>
+          <div ref={dropdownRef} className="accountWrapper">
+            <div onClick={() => setOpen(!open)} className="accountBtn">
+              <FaUserCircle size={20} />
+              <span className="hide-sm">{registeredName ? `Hello, ${registeredName}` : "Account"}</span>
+              <span style={{ marginLeft: 4 }}>▼</span>
             </div>
-          </NavLink>
+            <div className={`dropdown ${open ? "open" : ""}`}>
+              {user ? (
+                <>
+                  <div className="dropItem" onClick={() => { setOpen(false); navigate("/cancel-ticket"); }}>Cancel Ticket</div>
+                  
+                  <div className="dropItem logout" onClick={logout}>Logout</div>
+                </>
+              ) : (
+                <>
+                  <div className="dropItem" onClick={() => { setOpen(false); navigate("/login"); }}>Login</div>
+                  <div className="dropItem" onClick={() => { setOpen(false); navigate("/signup"); }}>Signup</div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
 
-          <NavLink to="/flight-tickets" style={navActive}>
-            <div style={navItem}>
-              <img src={flIcon} width="36" />
-              <span>Flight</span>
-            </div>
-          </NavLink>
+      {/* ===== Mobile Bottom Tabs ===== */}
+      <div className="mobileTabs">
+        <div
+          className={`mobileTab ${activeTab === "bus" ? "active" : ""}`}
+          onClick={() => { setActiveTab("bus"); navigate("/bus-tickets"); }}
+        >
+          <img src={busIcon} alt="Bus" className="tabIcon" />
+          <span>Bus</span>
+          <span className="underline" />
+        </div>
+        <div
+          className={`mobileTab ${activeTab === "cab" ? "active" : ""}`}
+          onClick={() => { setActiveTab("cab"); navigate("/CarBooking"); }}
+        >
+          <img src={cbIcon} alt="Cab" className="tabIcon" />
+          <span>Cabs</span>
+          <span className="underline" />
         </div>
       </div>
 
-      {/* RIGHT SECTION */}
-      <div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
-        <Link to="/contact-us" style={linkStyle}>
-          <FaPhoneAlt /> Help
-        </Link>
-
-        <Link to="/print-ticket" style={linkStyle}>
-          <FaClipboardList /> Print Ticket
-        </Link>
-
-        {/* ACCOUNT DROPDOWN */}
-        <div style={{ position: "relative" }}>
-          <div
-            onClick={() => setOpen(!open)}
-            style={{
-              cursor: "pointer",
-              background: "#e3f2fd",
-              padding: "8px 14px",
-              borderRadius: "6px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              fontWeight: "600",
-              color: "#0d47a1",
-            }}
-          >
-            <FaUserCircle size={22} />
-            {user ? `Hello, ${name?.split(" ")[0]}` : "Account"}
-            <span style={{ fontSize: "12px" }}>▼</span>
-          </div>
-
-          {/* DROPDOWN */}
-          <div
-            style={{
-              position: "absolute",
-              right: 0,
-              top: "46px",
-              background: "#fff",
-              width: "220px",
-              borderRadius: "10px",
-              boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
-              overflow: "hidden",
-              transform: open ? "scale(1)" : "scale(0.95)",
-              opacity: open ? 1 : 0,
-              pointerEvents: open ? "auto" : "none",
-              transition: "all 0.2s ease",
-            }}
-          >
-            {user ? (
-              <>
-                <div style={dropItem} onClick={() => navigate("/cancel-ticket")}>
-                  Cancel Ticket
-                </div>
-                <div
-                  style={dropItem}
-                  onClick={() => navigate("/reschedule-ticket")}
-                >
-                  Reschedule Ticket
-                </div>
-                <div
-                  style={{
-                    ...dropItem,
-                    color: "#d32f2f",
-                    fontWeight: "700",
-                  }}
-                  onClick={logout}
-                >
-                  Logout
-                </div>
-              </>
-            ) : (
-              <>
-                <div style={dropItem} onClick={() => navigate("/login")}>
-                  Login
-                </div>
-                <div style={dropItem} onClick={() => navigate("/signup")}>
-                  Signup
-                </div>
-                <div style={dropItem} onClick={() => navigate("/cancel-ticket")}>
-                  Cancel Ticket
-                </div>
-                <div
-                  style={dropItem}
-                  onClick={() => navigate("/reschedule-ticket")}
-                >
-                  Reschedule Ticket
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </nav>
-  );
+      <style>{`
+.navBar { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 0 24px; height: 74px; background: #fff; border-bottom: 1px solid #e6eaf0; font-family: Inter, system-ui, sans-serif; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
+.logo {
+  height: auto;        /* natural height */
+  width: auto;         /* natural width */
+  max-height: none;    /* no restriction */
+  max-width: 100px;    /* optional: prevent it from being too wide on large screens */
 }
 
-/* STYLES */
-const navItem = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  fontSize: "18px",
-  gap: "2px",
-};
 
-const navActive = ({ isActive }) => ({
-  textDecoration: "none",
-  fontWeight: "700",
-  padding: "6px 14px",
-  borderBottom: isActive ? "3px solid #1976d2" : "3px solid transparent",
-  color: isActive ? "#1976d2" : "#1f2937",
-  transition: "all 0.2s ease",
-});
+.leftWrap { display: flex; align-items: center; gap: 50px; }
+.tabGroup { display: flex; gap: 45px; align-items: flex-end; height: 100%; }
+.tabItem { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; font-size: 16px; font-weight: 700; position: relative; text-decoration: none; color: #1f2937; cursor: pointer; transition: all 0.3s ease; }
+.tabItem .underline { position: absolute; bottom: 0; height: 3px; width: 100%; background: #1976d2; border-radius: 3px; transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
+.tabItem.active .underline { transform: scaleX(1); }
+.tabIcon { width: 22px; height: 22px; }
 
-const dropItem = {
-  padding: "12px 16px",
-  cursor: "pointer",
-  fontSize: "14px",
-  borderBottom: "1px solid #f1f1f1",
-  transition: "background 0.2s ease",
-};
+.rightWrap { display: flex; align-items: center; gap: 22px; position: relative; }
+.topLink { text-decoration: none; display: flex; align-items: center; gap: 4px; color: #1f2937; font-weight: 500; transition: all 0.2s ease; }
+.topLink:hover { color: #1976d2; }
 
-const linkStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "6px",
-  fontWeight: "600",
-  color: "#1976d2",
-  textDecoration: "none",
-};
+.accountWrapper { position: relative; }
+.accountBtn { cursor: pointer; background: #e3f2fd; padding: 6px 12px; border-radius: 6px; display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 15px; color: #0d47a1; transition: all 0.2s ease; }
+.accountBtn:hover { background: #bbdefb; }
+.dropdown { position: absolute; right: 0; top: 44px; width: 220px; background: #fff; border-radius: 10px; box-shadow: 0 12px 30px rgba(0,0,0,0.12); transform: scale(0.95); opacity: 0; pointer-events: none; transition: all 0.2s ease; }
+.dropdown.open { transform: scale(1); opacity: 1; pointer-events: auto; }
+.dropItem { padding: 12px 16px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #f1f1f1; transition: background 0.15s ease; }
+.dropItem:hover { background: #f5f5f5; }
+.dropItem.logout { color: #d32f2f; font-weight: 700; }
+
+.mobileTabs {
+  display: none; 
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-top: 1px solid #e6eaf0;
+  justify-content: space-around;
+  padding: 6px 0;
+  box-shadow: 0 -3px 10px rgba(0,0,0,0.08);
+  z-index: 101;
+}
+.mobileTab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #6b7280; font-weight: 600; position: relative; text-decoration: none; cursor: pointer; }
+.mobileTab.active { color: #1976d2; }
+.mobileTab .underline { position: absolute; bottom: 0; height: 3px; width: 100%; background: #1976d2; border-radius: 3px; transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
+.mobileTab.active .underline { transform: scaleX(1); }
+
+@media (max-width: 600px) {
+  .tabGroup { display: none; } /* hide desktop tabs on mobile */
+  .hide-sm { display: none; }
+  .mobileTabs { display: flex; } 
+  .navBar { padding: 0 14px; height: 60px; }
+  .logo { height: 46px; }
+}
+      `}</style>
+    </>
+  );
+}

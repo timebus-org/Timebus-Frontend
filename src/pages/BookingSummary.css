@@ -89,3 +89,141 @@
   padding: 50px;
   font-size: 18px;
 }
+.summary-bg {
+  min-height: 100vh;
+  background: #f4f8ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px; /* added padding for mobile */
+}
+
+.summary-container {
+  width: 1100px;
+  max-width: 100%; /* allow shrink on mobile */
+  background: #fff;
+  border-radius: 20px;
+  display: flex;
+  padding: 30px;
+  gap: 40px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+  flex-wrap: wrap; /* stack on small screens */
+}
+
+.summary-left {
+  flex: 2 1 300px; /* min width 300px for mobile */
+}
+
+.summary-left h2 {
+  color: #0d47a1;
+}
+
+.summary-desc {
+  color: #555;
+  margin-bottom: 14px;
+}
+
+.summary-section {
+  margin-top: 20px;
+}
+
+.summary-section h4 {
+  color: #1e88e5;
+  margin-bottom: 8px;
+}
+
+.summary-section p {
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+.summary-right {
+  flex: 1 1 250px; /* min width for mobile */
+  background: #f7faff;
+  border-radius: 16px;
+  padding: 22px;
+  box-sizing: border-box;
+}
+
+.summary-right h3 {
+  color: #0d47a1;
+  margin-bottom: 14px;
+}
+
+.fare-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.pay-btn {
+  width: 100%;
+  border: none;
+  padding: 12px;
+  border-radius: 22px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.pay-btn.primary {
+  background: linear-gradient(90deg, #1e88e5, #0d47a1);
+  color: #fff;
+}
+
+.pay-btn.secondary {
+  background: #fff;
+  color: #0d47a1;
+  border: 2px solid #0d47a1;
+}
+
+.summary-error {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 992px) {
+  .summary-container {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .summary-left, .summary-right {
+    flex: 1 1 100%;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  .summary-left h2 {
+    font-size: 1.5rem;
+  }
+
+  .summary-section h4 {
+    font-size: 1rem;
+  }
+
+  .summary-section p {
+    font-size: 13px;
+  }
+
+  .summary-right h3 {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .pay-btn {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .summary-container {
+    padding: 15px;
+  }
+}
+

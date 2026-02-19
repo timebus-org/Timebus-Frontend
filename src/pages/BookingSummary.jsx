@@ -10,36 +10,41 @@ export default function BookingSummary() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
 
-  // 🔐 AUTH CHECK + PROFILE FETCH
+  // 🔐 AUTH CHECK
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    const init = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      if (!session) {
-        navigate("/login");
-        return;
+        if (!session) {
+          navigate("/login");
+          return;
+        }
+
+        setUser(session.user);
+
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .single();
+
+        if (profileData) setProfile(profileData);
+      } catch (err) {
+        console.error("Auth error:", err);
+      } finally {
+        setLoading(false);
       }
-
-      setUser(session.user);
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", session.user.id)
-        .single();
-
-      if (!error) {
-        setProfile(data);
-      }
-
-      setLoading(false);
     };
 
-    checkAuth();
+    init();
   }, [navigate]);
 
-  if (!state) return <div>No booking data</div>;
+  if (!state) return <div>No booking data found</div>;
   if (loading) return <div>Loading...</div>;
 
   const {
@@ -49,61 +54,103 @@ export default function BookingSummary() {
     from,
     to,
     date,
+    time,
     distanceKm = 0,
   } = state;
 
-  let totalFare = 0;
-
+  // 💰 Fare calculation
+  let estimatedFare = 0;
   if (tripType === "local") {
-    totalFare = selectedPackage.price;
+    estimatedFare = selectedPackage.price;
   } else {
     const billableKm = Math.max(distanceKm, 250);
-    totalFare =
-      billableKm * selectedPackage.perKm +
-      selectedPackage.driver;
+    estimatedFare =
+      billableKm * selectedPackage.perKm + selectedPackage.driver;
   }
 
-  const advance = Math.round(totalFare * 0.2);
+  // 👤 User info
+  const displayName =
+    profile?.full_name || user?.user_metadata?.full_name || "";
+  const displayPhone =
+    profile?.phone || user?.user_metadata?.phone || "";
+  const displayEmail = user?.email || "";
 
-  const handlePayment = (amount, paymentType) => {
-    navigate("/bookingConfirmation", {
-      state: {
-        ...state,
-        totalFare,
-        paidAmount: amount,
-        paymentType,
-        user: {
-          name: profile?.full_name,
-          phone: profile?.phone,
-          email: user.email,
-        },
-      },
-    });
+  // 🚖 SEND BOOKING REQUEST
+  const handleSendRequest = async () => {
+    if (!user) return;
+
+    setSending(true);
+
+    try {
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+      const res = await fetch(`${API_URL}/api/cab/request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          name: displayName,
+          phone: displayPhone,
+          email: displayEmail,
+          from,
+          to,
+          date,
+          time,
+          cab: cab.name,
+          tripType,
+          estimatedFare,
+        }),
+      });
+
+      let data = null;
+      const text = await res.text();
+
+      if (text) {
+        data = JSON.parse(text);
+      }
+
+      if (res.ok && data?.success) {
+  // Save booking info to localStorage
+  localStorage.setItem(
+    "lastBooking",
+    JSON.stringify({ from, to, date, time, cab: cab.name })
+  );
+
+  navigate("/booking-success");
+}
+ else {
+        alert("Booking failed. Please try again.");
+        console.error("Server response:", data);
+      }
+    } catch (err) {
+      console.error("Booking request error:", err);
+      alert("Server error. Please try later.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
     <div className="summary-bg">
       <div className="summary-container">
-
         {/* LEFT */}
         <div className="summary-left">
           <h2>{cab.name} / AC</h2>
           <p>{cab.desc}</p>
 
           <h4>User Details</h4>
-          <p><b>Name:</b> {profile?.full_name}</p>
-          <p><b>Mobile:</b> {profile?.phone}</p>
-          <p><b>Email:</b> {user.email}</p>
+          <p><b>Name:</b> {displayName}</p>
+          <p><b>Mobile:</b> {displayPhone}</p>
+          <p><b>Email:</b> {displayEmail}</p>
 
           <h4>Trip Details</h4>
           <p><b>From:</b> {from}</p>
           <p><b>To:</b> {to}</p>
           <p><b>Date:</b> {date}</p>
-          {tripType === "outstation" && (
-            <p><b>Distance:</b> {distanceKm} Km</p>
-          )}
+          <p><b>Time:</b> {time}</p>
 
-          <h4>Fare Calculation</h4>
+          <h4>Fare Info</h4>
           {tripType === "outstation" && (
             <>
               <p>Per Km: ₹{selectedPackage.perKm}</p>
@@ -115,33 +162,25 @@ export default function BookingSummary() {
 
         {/* RIGHT */}
         <div className="summary-right">
-          <h3>Fare Summary</h3>
+          <h3>Order Summary</h3>
 
           <div className="fare-row">
-            <span>Total Fare</span>
-            <span>₹{totalFare}</span>
+            <span>Estimated Fare</span>
+            <span>₹{estimatedFare}</span>
           </div>
 
-          <div className="fare-row">
-            <span>Advance (20%)</span>
-            <span>₹{advance}</span>
-          </div>
-
-          <button
-            className="pay-btn secondary"
-            onClick={() => handlePayment(advance, "ADVANCE")}
-          >
-            Pay ₹{advance} (Advance)
-          </button>
+          <p className="fare-note">
+            * Final price confirmed by cab owner.
+          </p>
 
           <button
             className="pay-btn primary"
-            onClick={() => handlePayment(totalFare, "FULL")}
+            disabled={sending}
+            onClick={handleSendRequest}
           >
-            Pay ₹{totalFare} (Full)
+            {sending ? "Sending..." : "Send Booking Request"}
           </button>
         </div>
-
       </div>
     </div>
   );

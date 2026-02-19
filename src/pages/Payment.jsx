@@ -1,214 +1,336 @@
-import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Payment.css";
-
-/* 🔑 RAZORPAY SCRIPT LOADER (REQUIRED) */
-const loadRazorpay = () => {
-  return new Promise((resolve) => {
-    if (window.Razorpay) return resolve(true);
-
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
 
 export default function Payment() {
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const [booking, setBooking] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  const {
-    bookingId,
-    tripId,
-    busName,
-    source,
-    destination,
-    journeyDate,
-    departureTime,
-    boardingPoint,
-    selectedSeats = [],
-    passengers = [],
-    totalPrice = 0,
-    contact = {},
-    seatLockExpiresAt,
-  } = state || {};
-
+  /* ================= LOAD BOOKING ================= */
   useEffect(() => {
-    if (!bookingId || !tripId || selectedSeats.length === 0) {
-      navigate("/", { replace: true });
-    }
-  }, [bookingId, tripId, selectedSeats, navigate]);
-
-  const [secondsLeft, setSecondsLeft] = useState(() => {
-    if (!seatLockExpiresAt) return 0;
-    return Math.max(
-      Math.floor((new Date(seatLockExpiresAt) - new Date()) / 1000),
-      0
-    );
-  });
-
-  useEffect(() => {
-    if (secondsLeft <= 0) return;
-    const timer = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s <= 1) {
-          clearInterval(timer);
-          navigate("/", { replace: true });
-          return 0;
-        }
-        return s - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [secondsLeft, navigate]);
-
-  const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
-  const ss = String(secondsLeft % 60).padStart(2, "0");
-
-  /* 💳 PAY NOW – FIXED */
-  const handlePayNow = async () => {
-    const loaded = await loadRazorpay();
-    if (!loaded) {
-      alert("Payment SDK failed. Check internet.");
+    const stored = localStorage.getItem("bookingSession");
+    if (!stored) {
+      navigate("/");
       return;
     }
 
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY,
-      amount: totalPrice * 100,
-      currency: "INR",
-      name: busName,
-      description: "Bus Ticket Payment",
-      handler: (response) => {
-        navigate("/success", {
-  state: {
-    source,
-    destination,
-    journeyDay,
-    journeyDate,
-    reportingTime,
-    departureTime,
-    boardingPoint,
-    landmark,
-    busName,
-    busType,
-    passengerName,
-    seatNumbers,
-    ticketId,
-    pnr,
-    totalFare,
-    supportPhone,
-    supportEmail,
-  },
-});
+    try {
+      const parsed = JSON.parse(stored);
 
-      },
-      prefill: {
-        email: contact.email,
-        contact: contact.phone,
-      },
-      theme: { color: "#2563eb" },
-    };
+      // Create expiry if not present (8 mins default)
+      if (!parsed.expiresAt) {
+        parsed.expiresAt = Date.now() + 8 * 60 * 1000;
+        localStorage.setItem("bookingSession", JSON.stringify(parsed));
+      }
 
-    new window.Razorpay(options).open();
+      setBooking(parsed);
+    } catch (err) {
+      localStorage.removeItem("bookingSession");
+      navigate("/");
+    }
+  }, [navigate]);
+
+  /* ================= COUNTDOWN ================= */
+  useEffect(() => {
+    if (!booking?.expiresAt) return;
+
+    const interval = setInterval(() => {
+      const remaining = Math.max(
+        Math.floor((booking.expiresAt - Date.now()) / 1000),
+        0
+      );
+
+      setTimeLeft(remaining);
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        alert("Session expired. Please book again.");
+        localStorage.removeItem("bookingSession");
+        navigate("/");
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [booking, navigate]);
+
+  /* ================= FORMAT TIMER (MM:SS) ================= */
+  const formatCountdown = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+const calculateDuration = (departure, arrival) => {
+  if (!departure || !arrival) return "--h --m";
+
+  const normalize = (time) => {
+    let t = time.toString().padStart(4, "0");
+    let hours = parseInt(t.slice(0, 2), 10);
+    let minutes = parseInt(t.slice(2, 4), 10);
+
+    // normalize minutes
+    if (minutes >= 60) {
+      hours += Math.floor(minutes / 60);
+      minutes = minutes % 60;
+    }
+
+    return hours * 60 + minutes; // total minutes
   };
 
-  if (!bookingId) return null;
+  let depMinutes = normalize(departure);
+  let arrMinutes = normalize(arrival);
+
+  // If arrival is next day
+  if (arrMinutes < depMinutes) {
+    arrMinutes += 24 * 60;
+  }
+
+  const total = arrMinutes - depMinutes;
+  const hours = Math.floor(total / 60);
+  const minutes = total % 60;
+
+  return `${hours}h ${minutes}m`;
+};
+
+  /* ================= FORMAT TRAVEL TIME ================= */
+  const formatTravelTime = (time) => {
+  if (!time) return "--:--";
+
+  let timeStr = time.toString().padStart(4, "0");
+
+  let hours = parseInt(timeStr.slice(0, 2), 10);
+  let minutes = parseInt(timeStr.slice(2, 4), 10);
+
+  // 🔥 Normalize minutes if >= 60
+  if (minutes >= 60) {
+    hours += Math.floor(minutes / 60);
+    minutes = minutes % 60;
+  }
+
+  // Handle next day
+  let nextDay = false;
+  if (hours >= 24) {
+    hours = hours % 24;
+    nextDay = true;
+  }
+
+  const formattedHours = hours % 12 || 12;
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  return `${formattedHours}:${minutes
+    .toString()
+    .padStart(2, "0")} ${ampm} ${nextDay ? "(+1 Day)" : ""}`;
+};
+
+
+  /* ================= PAYMENT ================= */
+ const handlePayment = async () => {
+  try {
+    setLoading(true);
+
+    const orderRes = await axios.post(
+      "http://localhost:5000/api/create-order",
+      { amount: booking.totalAmount }
+    );
+
+    const { orderId, key } = orderRes.data;
+
+    const options = {
+      key,
+      amount: Math.round(booking.totalAmount * 100),
+      currency: "INR",
+      name: booking?.bus?.travels || "Bus Booking",
+      description: "Bus Ticket Payment",
+      order_id: orderId,
+
+      handler: async (response) => {
+  try {
+    setLoading(true);
+
+    console.log("BLOCK KEY SENT TO CONFIRM:", booking?.blockKey);
+
+    const confirmRes = await axios.post(
+      "http://localhost:5000/api/confirm-ticket",
+      {
+        blockKey: booking?.blockKey,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_signature: response.razorpay_signature,
+      }
+    );
+
+ if (confirmRes.data.success) {
+  // Remove the temporary booking session
+  localStorage.removeItem("bookingSession");
+
+  // Navigate to TicketSuccess page with ticket data + email
+  setTimeout(() => {
+    navigate("/ticket-success", {
+      state: {
+        ...confirmRes.data.data,      // all ticket details
+        email: booking.contact.email, // attach email here
+      },
+    });
+  }, 1200);
+
+} else {
+  alert("Ticket confirmation failed.");
+  setLoading(false);
+}
+
+
+  } catch (err) {
+    console.error("Confirm Error:", err);
+    alert(
+      "Payment successful but ticket confirmation failed. Please contact support."
+    );
+    setLoading(false);
+  }
+},
+
+
+      modal: {
+        ondismiss: function () {
+          setLoading(false);
+        },
+      },
+
+      prefill: {
+        name: booking?.passengers?.[0]?.name || "",
+        contact: booking?.contact?.phone || "",
+        email: booking?.contact?.email || "",
+      },
+
+      theme: { color: "#1E3A8A" },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
+  } catch (err) {
+    console.error("Payment Init Error:", err);
+    alert("Payment initialization failed.");
+    setLoading(false);
+  }
+};
+
+
+  if (!booking) return null;
+
+  const fromName =
+    typeof booking.from === "object"
+      ? booking.from?.name
+      : booking.from;
+
+  const toName =
+    typeof booking.to === "object"
+      ? booking.to?.name
+      : booking.to;
 
   return (
-    <>
-      {/* SEAT LOCK */}
-      <div className={`seat-lock ${secondsLeft < 120 ? "danger" : ""}`}>
-        🔒 Seats locked for <b>{mm}:{ss}</b>
-      </div>
-
+    <div className="payment-wrapper">
       <div className="payment-container">
+
         {/* LEFT */}
         <div className="payment-left">
-          <div className="card">
-            <h3>Trip Details</h3>
 
-            <div className="info-row"><span>Bus</span><b>{busName}</b></div>
-            <div className="info-row"><span>Route</span><b>{source} → {destination}</b></div>
-            <div className="info-row"><span>Date & Time</span><b>{journeyDate} | {departureTime}</b></div>
-            <div className="info-row"><span>Boarding</span><b>{boardingPoint}</b></div>
+          <div className="card glass">
+            <h2>{booking?.bus?.travels}</h2>
+            <p className="bus-type">
+              {booking?.bus?.type || "AC Seater"}
+            </p>
+
+            <div className="route">
+              {fromName} → {toName}
+            </div>
+
+            <div className="timings">
+              <span>
+                Departure: {formatTravelTime(booking?.bus?.departureTime)}
+              </span>
+              <span>
+                Arrival: {formatTravelTime(booking?.bus?.arrivalTime)}
+              </span>
+              <span>
+                Duration: {calculateDuration(
+  booking?.bus?.departureTime,
+  booking?.bus?.arrivalTime
+)}
+
+              </span>
+            </div>
           </div>
 
-          <div className="card">
-            <h3>Passenger Details</h3>
-            {passengers.map((p, i) => (
-              <div key={i} className="passenger-row">
-                <div>
-                  <div className="passenger-name">{p.name}</div>
-                  <div className="passenger-meta">{p.gender}, {p.age} yrs</div>
+          <div className="card glass">
+            <h3>Seats</h3>
+            <div className="seat-list">
+              {booking?.seats?.map((s, i) => (
+                <div key={i} className="seat-chip">
+                  {s.seatName} - ₹{s.fare}
                 </div>
-                <div className="seat-badge">Seat {p.seat}</div>
+              ))}
+            </div>
+          </div>
+
+          <div className="card glass">
+            <h3>Passengers</h3>
+            {booking?.passengers?.map((p, i) => (
+              <div key={i} className="passenger">
+                <strong>{p.name}</strong>
+                <span>{p.age} yrs • {p.gender}</span>
               </div>
             ))}
+            <div className="contact">
+              <p>{booking?.contact?.phone}</p>
+              <p>{booking?.contact?.email}</p>
+            </div>
           </div>
 
-          <div className="card">
-            <h3>Contact Details</h3>
-            <div className="info-row">
-              <span>Email</span>
-              <b className="bold-black">{contact.email}</b>
-            </div>
-            <div className="info-row">
-              <span>Phone</span>
-              <b className="bold-black">{contact.phone}</b>
-            </div>
-          </div>
         </div>
 
         {/* RIGHT */}
-        <div className="payment-right">
-          <div className="summary-card">
-            <h3>Fare Summary</h3>
+        <div className="payment-right card glass">
 
-            <div className="row"><span>Seats</span><span>{selectedSeats.join(", ")}</span></div>
-            <div className="row"><span>Passengers</span><span>{passengers.length}</span></div>
-
-            <div className="row">
-              <span>Base Fare</span>
-              <span>₹{Math.round(totalPrice / 1.05)}</span>
-            </div>
-
-            <div className="row">
-              <span>GST (5%)</span>
-              <span>₹{totalPrice - Math.round(totalPrice / 1.05)}</span>
-            </div>
-
-            <div className="divider" />
-
-            <div className="row total">
-              <span>Total Amount</span>
-              <span>₹{totalPrice}</span>
-            </div>
-
-            {/* 🔐 SECURITY */}
-            <div className="secure-box">
-              🔐 Razorpay Secure Payments  
-              <br />✔ PCI-DSS Compliant  
-              <br />✔ No card details stored
-            </div>
-
-            <button className="pay-btn" onClick={handlePayNow}>
-              Pay ₹{totalPrice}
-            </button>
+          <div className="timer-box">
+            ⏳ Time Remaining: {formatCountdown(timeLeft)}
           </div>
-        </div>
-      </div>
 
-      {/* MOBILE */}
-      <div className="mobile-pay-bar">
-        <div>
-          <span>Total</span>
-          <b>₹{totalPrice}</b>
+          <div className="fare-row total">
+            Total Amount
+            <span>₹{booking.totalAmount}</span>
+          </div>
+
+          <button
+  className="pay-btn"
+  disabled={loading || timeLeft <= 0}
+  onClick={handlePayment}
+>
+  {loading ? (
+    <span className="btn-loader">
+      <span className="spinner"></span>
+      Processing...
+    </span>
+  ) : (
+    "Pay Securely"
+  )}
+</button>
+
+
+         {loading ? (
+  <p className="secure-text">
+    🎟 Confirming your ticket... Please wait.
+  </p>
+) : (
+  <p className="secure-text">
+    🔒 100% Secure & Encrypted Payment
+  </p>
+)}
+
+
         </div>
-        <button onClick={handlePayNow}>Pay Now</button>
       </div>
-    </>
+    </div>
   );
 }

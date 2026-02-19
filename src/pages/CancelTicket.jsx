@@ -1,141 +1,321 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../supabase"; // adjust path if needed
+import { useState, useMemo } from "react";
+import axios from "axios";
+import "./CancelTicket.css";
+import { useNavigate } from "react-router-dom";
 
 export default function CancelTicket() {
-  const [ticketId, setTicketId] = useState("");
-  const [otp, setOtp] = useState("");
-  const [session, setSession] = useState(null);
-  const [step, setStep] = useState("INIT"); // INIT | OTP_SENT | DONE
-  const [result, setResult] = useState(null);
+  const [tin, setTin] = useState("");
   const [loading, setLoading] = useState(false);
+  const [ticketDetails, setTicketDetails] = useState(null);
+  const [cancellationData, setCancellationData] = useState(null);
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const navigate = useNavigate();
 
-  /* ================= AUTH CHECK ================= */
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-    });
-  }, []);
+  const normalizeEntry = (entry) => {
+    if (!entry) return [];
+    return Array.isArray(entry) ? entry : [entry];
+  };
 
-  /* ================= MAIN ACTION ================= */
-  const cancelTicket = async () => {
-    if (!ticketId) return alert("Enter Ticket ID");
+  const fetchDetails = async () => {
+    if (!tin.trim()) return;
 
     try {
       setLoading(true);
+      setError("");
+      setSuccess(null);
 
-      const res = await fetch("http://localhost:5000/api/cancel-ticket", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ticketId,
-          otp: session ? null : otp, // OTP only if logged out
-          loggedIn: !!session,
-        }),
+      const [ticketRes, cancelRes] = await Promise.all([
+        axios.get(`http://localhost:5000/api/ticket?tin=${tin}`),
+        axios.get(`http://localhost:5000/api/cancellation-data?tin=${tin}`)
+      ]);
+
+      const ticket = ticketRes.data?.data || ticketRes.data;
+      const cancel = cancelRes.data?.data || cancelRes.data;
+
+      if (!ticket || !cancel) throw new Error("Invalid API response");
+
+      const cancellable = cancel.cancellable === true || cancel.cancellable === "true";
+      const partiallyCancellable =
+        cancel.partiallyCancellable === true || cancel.partiallyCancellable === "true";
+
+      setTicketDetails(ticket);
+
+      setCancellationData({
+        cancellable,
+        partiallyCancellable,
+        seatCharges: normalizeEntry(cancel.cancellationCharges?.entry).map(
+          (item) => ({
+            key: String(item.key),
+            value: Number(item.value),
+          })
+        ),
+        seatFares: normalizeEntry(cancel.fares?.entry).map(
+          (item) => ({
+            key: String(item.key),
+            value: Number(item.value),
+          })
+        ),
+        totalRefund: Number(cancel.totalRefundAmount) || 0,
+        totalCharge: Number(cancel.totalCancellationCharge) || 0,
+        policy: cancel.cancellationPolicy || "As per operator rules.",
       });
 
-      const data = await res.json();
-
-      // OTP flow for logged-out users
-      if (data.otpSent) {
-        setStep("OTP_SENT");
-        alert("OTP sent to registered email");
-        return;
-      }
-
-      setResult(data);
-      setStep("DONE");
+      setSelectedSeats([]);
     } catch (err) {
-      alert("Server error");
+      setError(
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Unable to fetch ticket details."
+      );
+      setTicketDetails(null);
+      setCancellationData(null);
     } finally {
       setLoading(false);
     }
   };
 
+  const toggleSeat = (seatName) => {
+    if (!cancellationData?.partiallyCancellable) return;
+
+    setSelectedSeats((prev) =>
+      prev.includes(seatName)
+        ? prev.filter((s) => s !== seatName)
+        : [...prev, seatName]
+    );
+  };
+
+  const calculatedTotals = useMemo(() => {
+    if (!cancellationData) return { refund: 0, charge: 0, fare: 0 };
+
+    if (!cancellationData.partiallyCancellable || selectedSeats.length === 0) {
+      return {
+        refund: cancellationData.totalRefund,
+        charge: cancellationData.totalCharge,
+        fare:
+          cancellationData.totalRefund + cancellationData.totalCharge,
+      };
+    }
+
+    let refund = 0;
+    let charge = 0;
+    let fare = 0;
+
+    selectedSeats.forEach((seat) => {
+      const seatCharge =
+        cancellationData.seatCharges.find((c) => c.key === seat)?.value || 0;
+
+      const seatFare =
+        cancellationData.seatFares.find((f) => f.key === seat)?.value || 0;
+
+      fare += seatFare;
+      refund += seatFare - seatCharge;
+      charge += seatCharge;
+    });
+
+    return { refund, charge, fare };
+  }, [selectedSeats, cancellationData]);
+
+  const handleCancel = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      let seatsToCancel = [];
+
+      if (cancellationData.partiallyCancellable) {
+        if (!selectedSeats.length) {
+          setError("Please select at least one seat.");
+          setLoading(false);
+          return;
+        }
+        seatsToCancel = selectedSeats;
+      } else {
+        seatsToCancel = ticketDetails.inventoryItems.map(
+          (i) => i.seatName
+        );
+      }
+
+      await axios.post(
+        "http://localhost:5000/api/cancel-ticket",
+        { tin, seatsToCancel }
+      );
+
+      setConfirmOpen(false);
+      setSelectedSeats([]);
+      await fetchDetails();
+
+      setSuccess({
+        refundAmount: calculatedTotals.refund,
+      });
+
+    } catch (err) {
+      setError(
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Cancellation failed."
+      );
+      setConfirmOpen(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancellableSeatKeys =
+    cancellationData?.seatCharges?.map((c) => c.key) || [];
+
   return (
-    <div style={wrap}>
-      <div style={card}>
-        <h2 style={title}>Cancel Ticket</h2>
+    <div className="cancel-container">
+      <div className="cancel-card">
+        <div className="header-row">
+  <h2>Cancel Ticket</h2>
+  <button
+    className="home-btn"
+    onClick={() => navigate("/")}
+  >
+    Home
+  </button>
+</div>
 
-        <input
-          style={inp}
-          placeholder="Enter Ticket ID / PNR"
-          value={ticketId}
-          onChange={(e) => setTicketId(e.target.value)}
-          disabled={step !== "INIT"}
-        />
 
-        {/* OTP ONLY FOR LOGGED-OUT USERS */}
-        {!session && step === "OTP_SENT" && (
-          <input
-            style={inp}
-            placeholder="Enter OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-          />
-        )}
-
-        <button style={btn} onClick={cancelTicket} disabled={loading}>
-          {loading ? "Processing..." : "Cancel Ticket"}
-        </button>
-
-        {result && (
-          <div style={msg}>
-            <p>{result.message}</p>
-            {result.refundAmount !== undefined && (
-              <p><b>Refund Amount:</b> ₹{result.refundAmount}</p>
-            )}
+        {!ticketDetails && !success && (
+          <div className="tin-section">
+            <input
+              type="text"
+              placeholder="Enter Ticket ID (TIN)"
+              value={tin}
+              onChange={(e) => setTin(e.target.value)}
+            />
+            <button onClick={fetchDetails} disabled={loading}>
+              {loading ? "Loading..." : "Fetch Details"}
+            </button>
           </div>
         )}
+
+        {error && <div className="error-box">{error}</div>}
+
+        {ticketDetails && cancellationData && !success && (
+          <>
+            <div className="ticket-info">
+              <p><strong>Status:</strong> {ticketDetails.status}</p>
+              <p><strong>Total Seats:</strong> {ticketDetails.inventoryItems?.length}</p>
+            </div>
+
+            {!cancellationData.cancellable && (
+              <div className="error-box">
+                This ticket is not cancellable. Departure time may have passed or operator restrictions apply.
+              </div>
+            )}
+
+            {cancellationData.cancellable && (
+              <>
+                <h3>
+                  {cancellationData.partiallyCancellable
+                    ? "Select Seats to Cancel"
+                    : "Full Ticket Cancellation"}
+                </h3>
+
+                {cancellationData.partiallyCancellable && (
+                  <div className="seat-grid">
+                    {ticketDetails.inventoryItems.map((item) => {
+                      const isSelected = selectedSeats.includes(item.seatName);
+                      const isDisabled =
+                        !cancellableSeatKeys.includes(item.seatName);
+
+                      return (
+                        <div
+                          key={item.seatName}
+                          className={`seat 
+                            ${isSelected ? "selected" : ""} 
+                            ${isDisabled ? "disabled" : ""}`}
+                          onClick={() =>
+                            !isDisabled && toggleSeat(item.seatName)
+                          }
+                        >
+                          {item.seatName}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="refund-summary">
+                  <p>Total Fare: ₹{calculatedTotals.fare}</p>
+                  <p>Cancellation Charges: ₹{calculatedTotals.charge}</p>
+                  <p className="refund-amount">
+                    Refund Amount: ₹{calculatedTotals.refund}
+                  </p>
+                </div>
+
+                <div className="policy-box">
+                  <strong>Cancellation Policy:</strong>
+                  <p>{cancellationData.policy}</p>
+                </div>
+
+                <button
+                  className="cancel-btn"
+                  disabled={
+                    loading ||
+                    (cancellationData.partiallyCancellable &&
+                      selectedSeats.length === 0)
+                  }
+                  onClick={() => setConfirmOpen(true)}
+                >
+                  {cancellationData.partiallyCancellable
+                    ? "Cancel Selected Seats"
+                    : "Cancel Entire Ticket"}
+                </button>
+              </>
+            )}
+          </>
+        )}
+
+        {success && (
+          <div className="success-box">
+            <h3>Cancellation Successful</h3>
+            <p>Refund Amount: ₹{success.refundAmount}</p>
+            <p>Refund will be credited to original payment method.</p>
+          </div>
+        )}
+
+        {confirmOpen && (
+          <div className="confirm-overlay">
+            <div className="confirm-box">
+              <h3>Confirm Cancellation</h3>
+              <p>
+                {cancellationData.partiallyCancellable
+                  ? `You are cancelling ${selectedSeats.length} seat(s).`
+                  : "You are cancelling the entire ticket."}
+              </p>
+              <p>Refund: ₹{calculatedTotals.refund}</p>
+              <p>Charges: ₹{calculatedTotals.charge}</p>
+              <p>This action cannot be undone.</p>
+
+              <div className="confirm-buttons">
+                <button onClick={handleCancel}>
+                  {loading ? "Cancelling..." : "Yes, Confirm"}
+                </button>
+                <button onClick={() => setConfirmOpen(false)}>
+                  No
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="note-wrapper">
+          <h4>Important Information</h4>
+          <ul>
+            <li>Cancellation charges apply as per operator policy.</li>
+            <li>Refund amount shown before confirmation is final.</li>
+            <li>Cancelled seats cannot be restored.</li>
+            <li>Refund will be credited to original payment method.</li>
+            <li>Cancellation after departure time is not allowed.</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
 }
-
-/* ================= STYLES ================= */
-
-const wrap = {
-  minHeight: "100vh",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  background: "#eef3ff",
-};
-
-const card = {
-  width: "420px",
-  background: "#fff",
-  padding: "24px",
-  borderRadius: "12px",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-};
-
-const title = {
-  marginBottom: "16px",
-  fontSize: "20px",
-};
-
-const inp = {
-  width: "100%",
-  padding: "12px",
-  marginBottom: "12px",
-  borderRadius: "6px",
-  border: "1px solid #ccc",
-};
-
-const btn = {
-  width: "100%",
-  padding: "12px",
-  background: "#ff3b30",
-  color: "#fff",
-  border: "none",
-  borderRadius: "6px",
-  cursor: "pointer",
-};
-
-const msg = {
-  marginTop: "16px",
-  fontSize: "14px",
-  background: "#f6f7fb",
-  padding: "10px",
-  borderRadius: "6px",
-};

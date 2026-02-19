@@ -371,3 +371,234 @@
 .trip-toggle button.active::after {
   display: none;
 }
+.time-dropdown {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+}
+/* Compact input box */
+.input-box.small {
+  max-width: 160px;   /* 👈 small size */
+  padding: 8px 10px;
+}
+
+/* Small input & dropdown */
+.small-input {
+  width: 90px;        /* 👈 compact */
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  outline: none;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Dropdown arrow clean */
+.time-dropdown {
+  appearance: none;
+}
+/* Date + Time Row */
+.date-time-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Half width input boxes */
+.input-box.half {
+  flex: 1;
+  padding: 8px 10px;
+}
+
+/* Compact input */
+.small-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  outline: none;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Dropdown clean */
+.time-dropdown {
+  appearance: none;
+}
+
+/* Mobile stack */
+@media (max-width: 600px) {
+  .date-time-row {
+    flex-direction: column;
+  }
+.booking-bg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 20px;
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+.booking-card {
+  display: flex;
+  max-width: 1200px;
+  width: 100%;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+.booking-left {
+  flex: 1;
+  padding: 40px 30px;
+}
+
+.booking-left h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.trip-toggle {
+  display: flex;
+  margin-bottom: 25px;
+}
+
+.trip-toggle button {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+  background: #e0e0e0;
+  color: #333;
+  border-radius: 8px;
+  margin-right: 10px;
+}
+
+.trip-toggle button:last-child {
+  margin-right: 0;
+}
+
+.trip-toggle button.active {
+  background: #4facfe;
+  color: #fff;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  background: #f9f9f9;
+  padding: 10px 15px;
+  border-radius: 8px;
+  gap: 10px;
+}
+
+.input-box input,
+.input-box select,
+.input-box .date-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+}
+
+.date-time-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.half {
+  flex: 1;
+}
+
+.small-input {
+  padding: 8px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #ccc;
+}
+
+.search-btn {
+  width: 100%;
+  padding: 12px 0;
+  background: #4facfe;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.search-btn:hover {
+  background: #00f2fe;
+}
+
+/* RIGHT SIDE PROFESSIONAL DESIGN */
+.booking-right {
+  flex: 1;
+  position: relative;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.booking-right img {
+  width: 100%;
+  max-width: 500px;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.overlay-text {
+  position: absolute;
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-shadow: 1px 1px 8px rgba(0,0,0,0.7);
+}
+.booking-right {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* Make image fully cover container */
+.booking-right img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image covers container without distortion */
+  display: block;
+}
+
+/* Optional: overlay text for professional look */
+.booking-right .overlay-text {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+
+}

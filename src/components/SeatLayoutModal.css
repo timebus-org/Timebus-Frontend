@@ -1,0 +1,416 @@
+/* =========================
+   MODAL BASE
+========================= */
+
+.seat-modal-pro {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.seat-modal-header {
+  background: #111827;
+  color: white;
+  padding: 18px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-btn {
+  background: #dc2626;
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* =========================
+   BODY LAYOUT
+========================= */
+
+.seat-modal-body {
+  flex: 1;
+  background: #f3f4f6;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.main-layout {
+  display: flex;
+  gap: 20px;
+}
+
+.seat-section {
+  width: 70%;
+}
+
+.summary-section {
+  width: 30%;
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+/* =========================
+   DECK DESIGN
+========================= */
+
+.deck-grid-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.deck-box {
+  flex: 1;
+  min-width: 0;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 25px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.deck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.deck-title {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.deck-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.front-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.driver-icon {
+  font-size: 20px;
+}
+
+/* =========================
+   SEAT CANVAS
+========================= */
+
+.deck-canvas {
+  position: relative;
+  height: 500px;
+
+   background: #f8fafc;
+  border-radius: 20px;
+
+  padding: 40px;
+
+  box-shadow:
+    inset 0 2px 10px rgba(0,0,0,0.04),
+    0 10px 30px rgba(0,0,0,0.06);
+}
+
+/* Window lines */
+.window-line {
+  position: absolute;
+  width: 6px;
+  height: 100%;
+  background: #e5e7eb;
+}
+
+.window-line.left { left: 0; }
+.window-line.right { right: 0; }
+
+/* Aisle */
+.aisle-highlight {
+  position: absolute;
+  left: 50%;
+  width: 60px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.03);
+}
+
+/* =========================
+   PREMIUM SEATS
+========================= */
+
+.seat-pro {
+  position: absolute;
+  aspect-ratio: 1 / 1;
+  width: 46px;          /* bigger */
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 6px;
+  font-size: 11px;
+  font-weight: 600;
+
+  border-radius: 12px;
+  cursor: pointer;
+
+  background: linear-gradient(145deg, #ffffff, #f1f5f9);
+  border: 1px solid #e2e8f0;
+
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.6),
+    0 4px 10px rgba(0,0,0,0.05);
+
+  transition: all 0.25s ease;
+}
+
+
+
+.seat-pro small {
+  font-size: 10px;
+  font-weight: 500;
+  margin-top: 2px;
+  opacity: 0.7;
+}
+
+.seat-pro:not(.booked):hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow:
+    0 6px 12px rgba(0,0,0,0.08),
+    0 14px 28px rgba(0,0,0,0.12);
+}
+
+/* Selected */
+.seat-pro.selected {
+  background: linear-gradient(145deg, #22c55e, #15803d);
+  color: white;
+  border: none;
+
+  box-shadow:
+    0 8px 20px rgba(34,197,94,0.45),
+    0 0 20px rgba(34,197,94,0.3);
+}
+
+
+/* Booked */
+.seat-pro.booked {
+  background: linear-gradient(145deg, #9ca3af, #4b5563);
+  color: white;
+  border: none;
+  cursor: not-allowed;
+
+  box-shadow: none;
+  opacity: 0.9;
+}
+
+
+.seat-pro.ladies:not(.selected) {
+  background: linear-gradient(145deg, #f472b6, #be185d);
+  color: white;
+  border: none;
+
+  box-shadow:
+    0 8px 20px rgba(236,72,153,0.4);
+}
+
+
+.seat-pro.sleeper {
+  width: 52px;
+  height: 80px;     /* bigger premium bed */
+  border-radius: 20px;
+}
+
+
+.seat-pro:active {
+  transform: scale(0.97);
+}
+
+/* =========================
+   LEGEND
+========================= */
+
+.seat-legend {
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.legend-box {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  margin-right: 4px;
+}
+
+.legend-box.available {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+}
+
+.legend-box.selected { background: #22c55e; }
+.legend-box.booked { background: #9ca3af; }
+.legend-box.ladies { background: #ec4899; }
+
+/* =========================
+   BUTTONS
+========================= */
+
+.continue-btn,
+.points-footer button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #111827;
+  color: white;
+  transition: 0.2s;
+}
+
+.continue-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.continue-btn:hover:not(:disabled),
+.points-footer button:hover {
+  background: #2563eb;
+}
+
+/* =========================
+   STEP 2 POINTS
+========================= */
+
+.points-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.points-block {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.points-list {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.point-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #f3f4f6;
+  transition: 0.2s;
+}
+
+.point-item:hover {
+  background: #e5e7eb;
+}
+
+.point-item.active {
+  background: #2563eb;
+  color: white;
+}
+
+.bullet {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #111827;
+}
+
+.point-item.active .bullet {
+  background: white;
+}
+
+.points-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1024px) {
+  .main-layout { flex-direction: column; }
+  .seat-section, .summary-section { width: 100%; }
+  .summary-section { position: relative; top: 0; margin-top: 20px; }
+  .deck-grid-layout { flex-direction: column; }
+}
+
+@media (max-width: 600px) {
+  .seat-modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+.deck-canvas {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  background: #f9fafb;
+  border-radius: 14px;
+  overflow: hidden;
+
+  padding: 30px 40px;   /* 👈 ADD THIS */
+}
+
+
+  .seat-pro {
+    font-size: 10px;
+  }
+
+  .seat-pro small {
+    font-size: 8px;
+  }
+
+  .seat-legend {
+    flex-wrap: wrap;
+  }
+
+  .points-footer {
+    flex-direction: column;
+  }
+}
+.seat-pro.sleeper.horizontal {
+  aspect-ratio: 2 / 1;
+}
+
+.seat-pro:not(.booked):hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.6),
+    0 10px 24px rgba(0,0,0,0.12);
+}

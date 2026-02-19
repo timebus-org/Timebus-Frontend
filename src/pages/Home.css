@@ -1,0 +1,156 @@
+/* ================= MOBILE AUTO-FIT HERO ================= */
+@media (max-width: 768px) {
+
+  /* Global safety */
+  html, body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Hero must grow/shrink naturally */
+  .hero {
+    min-height: unset !important;
+    height: auto !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Stack layout */
+  .heroGrid {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    padding: 24px 14px !important;
+    gap: 16px !important;
+    box-sizing: border-box;
+  }
+
+  /* Heading scales automatically */
+  .hero h1 {
+    font-size: clamp(22px, 6vw, 28px) !important;
+    line-height: 1.25 !important;
+    text-align: center;
+    margin-bottom: 16px !important;
+  }
+
+  /* Search card auto-fit */
+  .searchCard {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    box-sizing: border-box;
+  }
+
+  /* Stack inputs */
+  .searchRow {
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100%;
+  }
+
+  /* Inputs full width */
+  .searchRow > div {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+
+  /* Hide swap safely */
+  .swapBtn {
+    display: none !important;
+  }
+
+  /* Buttons adapt */
+  .searchRow button {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center;
+    padding: 14px 0 !important;
+  }
+
+  /* Remove image completely */
+  .heroImage {
+    display: none !important;
+  }
+
+  /* Hide Today/Tomorrow buttons */
+  .dayBtn {
+    display: none !important;
+  }
+}
+/* PAGE ENTER ANIMATION */
+.page-enter {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  animation: pageIn 0.6s ease-out forwards;
+}
+
+@keyframes pageIn {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* OPTIONAL: stagger children */
+.page-stagger > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: childIn 0.6s ease forwards;
+}
+
+.page-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+.page-stagger > *:nth-child(2) { animation-delay: 0.2s; }
+.page-stagger > *:nth-child(3) { animation-delay: 0.3s; }
+.page-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes childIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ================= MOBILE RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+
+  /* HERO GRID STACK */
+  .hero-grid-mobile {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Stack From/To vertically */
+  .row-mobile {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  /* Full width fields */
+  .field-mobile {
+    width: 100% !important;
+  }
+
+  /* Center swap button */
+  .swap-mobile {
+    align-self: center !important;
+    margin: 8px 0;
+  }
+
+  /* Hide right image on mobile */
+  .hide-mobile {
+    display: none !important;
+  }
+
+  /* Make search button full width */
+  .search-btn-mobile {
+    width: 100% !important;
+    margin-top: 12px;
+  }
+}
+@media (max-width: 768px) {
+
+  .hide-swap-mobile {
+    display: none !important;
+  }
+
+}

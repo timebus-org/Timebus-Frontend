@@ -1,0 +1,228 @@
+.result-header {
+  background: #ffffff;
+  padding: 18px 25px;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-route {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.label {
+  font-size: 11px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.result-route h3 {
+  margin: 2px 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.date-block h4 {
+  margin: 2px 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.arrow {
+  font-size: 22px;
+  font-weight: 600;
+  color: #d84e55;
+}
+
+.modify-btn {
+  background: #d84e55;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.modify-btn:hover {
+  background: #b93b42;
+}
+/* ================= RESULT HEADER ================= */
+
+.result-header {
+  position: relative;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.75);
+  padding: 20px 28px;
+  border-radius: 18px;
+  margin-bottom: 30px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+
+  animation: headerFade 0.6s ease forwards;
+  transform: translateY(-15px);
+  opacity: 0;
+}
+
+/* subtle animated border glow */
+.result-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  padding: 1px;
+  background: linear-gradient(
+    120deg,
+    rgba(216, 78, 85, 0.4),
+    rgba(37, 99, 235, 0.4),
+    rgba(216, 78, 85, 0.4)
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ================= ROUTE ================= */
+
+.result-route {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+
+.label {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.result-route h3 {
+  margin: 4px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.date-block h4 {
+  margin: 4px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* animated arrow */
+.arrow {
+  font-size: 24px;
+  font-weight: 700;
+  color: #d84e55;
+  animation: arrowPulse 1.8s infinite ease-in-out;
+}
+
+/* ================= MODIFY BUTTON ================= */
+
+.modify-btn {
+  background: linear-gradient(135deg, #d84e55, #c43c43);
+  color: #fff;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(216, 78, 85, 0.3);
+}
+
+.modify-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(216, 78, 85, 0.4);
+}
+
+/* ================= ANIMATIONS ================= */
+
+@keyframes headerFade {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes arrowPulse {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+/* ===== RESULT HEADER (BLUE THEME) ===== */
+
+.result-header {
+  position: relative;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.85);
+
+  padding: 16px 24px;   /* reduced padding */
+  border-radius: 14px;
+
+  margin-top: -25px;      /* 👈 less gap from navbar */
+  margin-bottom: 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* route arrow */
+.arrow {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2563eb;   /* blue */
+}
+
+/* modify button */
+.modify-btn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.modify-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+}
+.result-route h3 {
+  margin: 2px 0;
+  font-size: 19px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.label {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}

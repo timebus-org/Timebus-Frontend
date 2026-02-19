@@ -1,0 +1,17 @@
+.failed-container {
+  text-align: center;
+  padding: 60px;
+}
+
+.failed-container h1 {
+  color: red;
+}
+
+button {
+  padding: 10px 20px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

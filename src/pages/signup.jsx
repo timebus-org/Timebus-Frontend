@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { supabase } from "../lib/supabase";
+import { useNavigate, useLocation } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -9,27 +10,37 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // 🔹 Get cabData if redirected from BOOK NOW
+  const cabData = location.state?.cabData;
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg("");
 
-    const { data, error } = await supabase.auth.signUp({
+    // 1️⃣ Sign up the user
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { name, phone },
+        data: {
+          full_name: name,
+          phone: phone,
+        },
       },
     });
 
-    if (error) {
+    if (signUpError) {
       setLoading(false);
-      setErrorMsg(error.message);
+      setErrorMsg(signUpError.message);
       return;
     }
 
-    const user = data.user;
-
+    // 2️⃣ Insert profile into "profiles" table
+    const user = signUpData.user;
     const { error: profileError } = await supabase
       .from("profiles")
       .insert({
@@ -39,15 +50,31 @@ export default function Register() {
         phone,
       });
 
-    setLoading(false);
-
     if (profileError) {
+      setLoading(false);
       setErrorMsg(profileError.message);
       return;
     }
 
-    // ✅ Redirect to home page
-    window.location.href = "/";
+    // 3️⃣ Sign in the user immediately after signup
+    const { data: sessionData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    setLoading(false);
+
+    if (signInError) {
+      setErrorMsg(signInError.message);
+      return;
+    }
+
+    // 4️⃣ Redirect to bookingSummary if cabData exists
+    if (cabData) {
+      navigate("/bookingSummary", { state: cabData });
+    } else {
+      navigate("/"); // fallback
+    }
   };
 
   return (
@@ -98,7 +125,7 @@ export default function Register() {
 
         <p className="switch-auth">
           Already have an account?{" "}
-          <span onClick={() => (window.location.href = "/login")}>
+          <span onClick={() => navigate("/login")}>
             Sign in
           </span>
         </p>

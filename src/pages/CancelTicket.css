@@ -1,0 +1,319 @@
+/* =====================================================
+   TIMEBUS BLUE THEME – CLEAN PRODUCTION VERSION
+===================================================== */
+
+/* ================= ROOT COLORS ================= */
+
+:root {
+  --primary-blue: #1a73e8;
+  --primary-blue-dark: #0f4c81;
+  --primary-blue-light: #e8f0fe;
+  --success-blue: #2563eb;
+  --danger-blue: #1e40af;
+  --text-dark: #1f2937;
+  --text-light: #6b7280;
+  --border-light: #e5e7eb;
+}
+
+/* ================= CONTAINER ================= */
+
+.cancel-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* ================= CARD ================= */
+
+.cancel-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 850px;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
+
+.cancel-card h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--primary-blue-dark);
+}
+
+/* ================= INPUT SECTION ================= */
+
+.tin-section {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.tin-section input {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  font-size: 14px;
+}
+
+.tin-section button {
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: none;
+  background: var(--primary-blue);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.tin-section button:hover {
+  background: var(--primary-blue-dark);
+}
+
+/* ================= TICKET INFO ================= */
+
+.ticket-info {
+  background: var(--primary-blue-light);
+  padding: 18px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+/* ================= SEAT GRID ================= */
+
+.seat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.seat {
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 2px solid var(--primary-blue);
+  color: var(--primary-blue);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.seat:hover {
+  transform: scale(1.05);
+  background: var(--primary-blue-light);
+}
+
+.seat.selected {
+  background: var(--primary-blue);
+  color: white;
+}
+
+.seat.disabled {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+/* ================= REFUND SUMMARY ================= */
+
+.refund-summary {
+  background: var(--primary-blue-light);
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 25px;
+  font-size: 15px;
+  color: var(--text-dark);
+}
+
+.refund-summary p {
+  margin: 6px 0;
+}
+
+.refund-amount {
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--primary-blue-dark);
+}
+
+/* ================= POLICY BOX ================= */
+
+.policy-box {
+  background: #f0f6ff;
+  border: 1px solid var(--primary-blue);
+  padding: 18px;
+  border-radius: 14px;
+  font-size: 14px;
+  margin-bottom: 25px;
+  color: var(--text-dark);
+}
+
+/* ================= PRIMARY CANCEL BUTTON ================= */
+
+.cancel-btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: 14px;
+  border: none;
+  background: var(--primary-blue);
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background: var(--primary-blue-dark);
+}
+
+.cancel-btn:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+/* ================= SUCCESS ================= */
+
+.success-box {
+  background: var(--primary-blue-light);
+  border: 1px solid var(--primary-blue);
+  padding: 25px;
+  border-radius: 16px;
+  margin-top: 20px;
+  text-align: center;
+  color: var(--primary-blue-dark);
+}
+
+/* ================= ERROR ================= */
+
+.error-box {
+  background: #e3f2fd;
+  border: 1px solid var(--primary-blue);
+  padding: 18px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  color: var(--primary-blue-dark);
+  font-size: 14px;
+}
+
+/* ================= CONFIRM MODAL ================= */
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 50, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.confirm-box {
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+}
+
+.confirm-box h3 {
+  margin-bottom: 15px;
+  color: var(--primary-blue-dark);
+}
+
+.confirm-box p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+.confirm-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+
+.yes-btn {
+  background: var(--primary-blue);
+  color: white;
+  padding: 10px 22px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.yes-btn:hover {
+  background: var(--primary-blue-dark);
+}
+
+.no-btn {
+  background: #e5e7eb;
+  padding: 10px 22px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.no-btn:hover {
+  background: #d1d5db;
+}
+
+/* ================= NOTE SECTION ================= */
+
+.note-wrapper {
+  margin-top: 35px;
+  padding: 20px;
+  background: var(--primary-blue-light);
+  border-radius: 16px;
+  border: 1px solid var(--primary-blue);
+}
+
+.note-wrapper h4 {
+  margin-bottom: 12px;
+  color: var(--primary-blue-dark);
+}
+
+.note-content {
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+.note-content li {
+  margin-bottom: 6px;
+}
+/* ================= HEADER WITH HOME BUTTON ================= */
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.home-btn {
+  background: transparent;
+  border: 2px solid var(--primary-blue);
+  color: var(--primary-blue);
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.home-btn:hover {
+  background: var(--primary-blue);
+  color: white;
+}
