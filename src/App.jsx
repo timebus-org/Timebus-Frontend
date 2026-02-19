@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
+import Login from "./pages/login";
 import Register from "./pages/signup";
 import AuthCallback from "./pages/AuthCallback";
 import Results from "./pages/Results";
@@ -20,7 +20,7 @@ import CarSearchResults from "./pages/carSearchResults";
 import BookingSummary from "./pages/BookingSummary";
 import RequestCreated from "./pages/RequestCreated";
 import PaymentFailed from "./pages/PaymentFailed";
-import Success from "./pages/Success"; 
+import Success from "./pages/success"; 
 import Ticket from "./pages/Ticket";
 import TicketSuccess from "./pages/TicketSuccess";
 export default function App() {
@@ -82,3 +82,4 @@ function AppContent() {
     </>
   );
 }
+
