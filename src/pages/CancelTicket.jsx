@@ -28,8 +28,8 @@ export default function CancelTicket() {
       setSuccess(null);
 
       const [ticketRes, cancelRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/ticket?tin=${tin}`),
-        axios.get(`http://localhost:5000/api/cancellation-data?tin=${tin}`)
+        axios.get(`${import.meta.env.VITE_API_URL}/api/ticket?tin=${tin}`),
+axios.get(`${import.meta.env.VITE_API_URL}/api/cancellation-data?tin=${tin}`)
       ]);
 
       const ticket = ticketRes.data?.data || ticketRes.data;
@@ -139,7 +139,7 @@ export default function CancelTicket() {
       }
 
       await axios.post(
-        "http://localhost:5000/api/cancel-ticket",
+        `${import.meta.env.VITE_API_URL}/api/cancel-ticket`,
         { tin, seatsToCancel }
       );
 
@@ -319,3 +319,4 @@ export default function CancelTicket() {
     </div>
   );
 }
+
