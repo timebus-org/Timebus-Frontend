@@ -45,7 +45,7 @@ function AppContent() {
         <Route path="/bus-tickets" element={<Home />} />
         <Route path="/passenger-info" element={<PassengerInfo />} />
         <Route path="/print-ticket" element={<PrintTicket />} />
-        <Route path="/success" element={<BookingSuccess />} />
+        
         <Route path="/CarBooking" element={<CabBookingPage />} />
         <Route path="/carSearchResults" element={<CarSearchResults />} />
         <Route path="/BookingSummary" element={<BookingSummary />} />
@@ -85,4 +85,5 @@ function AppContent() {
     </>
   );
 }
+
 
