@@ -146,7 +146,7 @@ axios.get(`${import.meta.env.VITE_API_URL}/api/cancellation-data?tin=${tin}`)
       setConfirmOpen(false);
       setSelectedSeats([]);
       await fetchDetails();
-
+      setError(null);
       setSuccess({
         refundAmount: calculatedTotals.refund,
       });
@@ -319,4 +319,5 @@ axios.get(`${import.meta.env.VITE_API_URL}/api/cancellation-data?tin=${tin}`)
     </div>
   );
 }
+
 
