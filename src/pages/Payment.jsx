@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Payment.css";
-
+const API = import.meta.env.VITE_API_URL;
 export default function Payment() {
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
@@ -131,7 +131,7 @@ const calculateDuration = (departure, arrival) => {
     setLoading(true);
 
     const orderRes = await axios.post(
-      "http://localhost:5000/api/create-order",
+      `${API}/api/create-order`,
       { amount: booking.totalAmount }
     );
 
@@ -152,7 +152,7 @@ const calculateDuration = (departure, arrival) => {
     console.log("BLOCK KEY SENT TO CONFIRM:", booking?.blockKey);
 
     const confirmRes = await axios.post(
-      "http://localhost:5000/api/confirm-ticket",
+      `${API}/api/confirm-ticket`,
       {
         blockKey: booking?.blockKey,
         razorpay_payment_id: response.razorpay_payment_id,
@@ -334,3 +334,4 @@ const calculateDuration = (departure, arrival) => {
     </div>
   );
 }
+
