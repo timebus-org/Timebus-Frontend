@@ -304,23 +304,19 @@ export default function FooterWithFaq() {
           <div>
             <h4 style={title}>Support</h4>
             <ul style={list}>
-              <li>
-                <Link to="/faq" style={linkStyle}>
-                  FAQs
-                </Link>
-              </li>
+              
               <li>
                 <Link to="/contact-us" style={linkStyle}>
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" style={linkStyle}>
-                  Privacy Policy
-                </Link>
+                <Link to="/privacy-policy" style={linkStyle}>
+  Privacy Policy
+</Link>
               </li>
               <li>
-                <Link to="/terms" style={linkStyle}>
+                <Link to="/terms-and-conditions" style={linkStyle}>
                   Terms & Conditions
                 </Link>
               </li>
@@ -359,12 +355,12 @@ export default function FooterWithFaq() {
         {/* BOTTOM BAR */}
         <div style={bottomBar}>
           © 2025 Timebus Technologies Pvt. Ltd. •
-          <Link to="/privacy" style={bottomLink}>
+          <Link to="/privacy-policy" style={bottomLink}>
             {" "}
             Privacy{" "}
           </Link>
           •
-          <Link to="/terms" style={bottomLink}>
+          <Link to="/terms-and-conditions" style={bottomLink}>
             {" "}
             Terms{" "}
           </Link>
