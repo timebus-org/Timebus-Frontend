@@ -4,7 +4,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "./TicketSuccess.css";
 import logo from "../assets/logo.png";
-
+const API = import.meta.env.VITE_API_URL;
 export default function TicketSuccess() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -75,7 +75,7 @@ useEffect(() => {
       pdf.save(`TimeBus_Ticket_${ticket?.tin}.pdf`);
 
       // 2️⃣ Send email
-      const res = await fetch("http://localhost:5000/api/send-ticket", {
+      const res = await fetch(`${API}/api/send-ticket`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -249,3 +249,4 @@ useEffect(() => {
     </div>
   );
 }
+
