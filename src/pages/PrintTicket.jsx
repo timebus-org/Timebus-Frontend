@@ -25,8 +25,8 @@ const [refundAmount, setRefundAmount] = useState(0);
       setTicket(null);
 
       const res = await axios.get(
-        `http://localhost:5000/api/ticket?tin=${tin.trim()}`
-      );
+  `${import.meta.env.VITE_API_URL}/api/ticket?tin=${tin.trim()}`
+);
 
       if (res.data.success) {
         setTicket(res.data.data); // IMPORTANT
@@ -160,3 +160,4 @@ const [refundAmount, setRefundAmount] = useState(0);
     </div>
   );
 }
+
