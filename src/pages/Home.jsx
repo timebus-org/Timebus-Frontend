@@ -22,6 +22,7 @@ import "./TimeBusBanner.css";
 import peopleIllustration from "../assets/people-illustration.png";
 export default function Home() {
   const navigate = useNavigate();
+  const API = import.meta.env.VITE_API_URL;
   const today = new Date().toISOString().split("T")[0];
   const [loading, setLoading] = useState(false);
   const [rotating, setRotating] = useState(false);
@@ -69,7 +70,7 @@ const formatDisplayDate = (value) => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/cities");
+        const res = await fetch(`${API}/api/cities`);
         const data = await res.json();
         const cityArray = Array.isArray(data)
           ? data
@@ -155,7 +156,7 @@ const formatDisplayDate = (value) => {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:5000/search", {
+      const response = await fetch(`${API}/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -841,6 +842,7 @@ const aboutText = {
   color: "#475569",
   marginBottom: "16px"
 };
+
 
 
 
