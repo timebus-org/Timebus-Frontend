@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import "./PassengerInfo.css";
-
+const API = import.meta.env.VITE_API_URL;
 export default function PassengerInfo() {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -264,7 +264,7 @@ const calculateDuration = (dep, arr) => {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/api/block-ticket",
+        `${API}/api/block-ticket`,
         blockPayload
       );
 
@@ -538,3 +538,4 @@ const calculateDuration = (dep, arr) => {
     </div>
   );
 }
+
