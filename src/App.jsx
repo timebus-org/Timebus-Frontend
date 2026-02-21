@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import Login from "./pages/login";
+import Login from "./pages/Login";
 import Register from "./pages/signup";
 import AuthCallback from "./pages/AuthCallback";
 import Results from "./pages/Results";
@@ -20,9 +20,11 @@ import CarSearchResults from "./pages/carSearchResults";
 import BookingSummary from "./pages/BookingSummary";
 import RequestCreated from "./pages/RequestCreated";
 import PaymentFailed from "./pages/PaymentFailed";
-import Success from "./pages/success"; 
+import Success from "./pages/Success"; 
 import Ticket from "./pages/Ticket";
 import TicketSuccess from "./pages/TicketSuccess";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
 export default function App() {
   return (
     <BrowserRouter>
@@ -48,7 +50,8 @@ function AppContent() {
         <Route path="/carSearchResults" element={<CarSearchResults />} />
         <Route path="/BookingSummary" element={<BookingSummary />} />
         <Route path="/request-created" element={<RequestCreated />} />
-
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+<Route path="/terms-and-conditions" element={<TermsConditions />} />
         {/* AUTH */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Register />} />
@@ -82,4 +85,3 @@ function AppContent() {
     </>
   );
 }
-
