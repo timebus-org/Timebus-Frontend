@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./SeatLayoutModal.css";
-
+const API = import.meta.env.VITE_API_URL;
 export default function SeatLayoutPro({ bus, from, to, date, onClose }) {
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ export default function SeatLayoutPro({ bus, from, to, date, onClose }) {
         setLoading(true);
 
         const res = await axios.get(
-          `http://localhost:5000/api/trips/trip-details/${bus.id}`
+          `${API}/api/trips/trip-details/${bus.id}`
         );
 
         if (!isMounted) return;
@@ -307,3 +307,4 @@ transform: "translate(-50%, -50%)",
     </div>
   );
 }
+
