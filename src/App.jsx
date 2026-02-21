@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
+import Login from "./pages/login";
 import Register from "./pages/signup";
 import AuthCallback from "./pages/AuthCallback";
 import Results from "./pages/Results";
@@ -14,13 +14,13 @@ import PassengerInfo from "./pages/PassengerInfo";
 import CancelTicket from "./pages/CancelTicket";
 import Bookings from "./pages/Bookings";
 import PrintTicket from "./pages/PrintTicket";
-import BookingSuccess from "./pages/success";
+
 import CabBookingPage from "./pages/CarBooking";
 import CarSearchResults from "./pages/carSearchResults";
 import BookingSummary from "./pages/BookingSummary";
 import RequestCreated from "./pages/RequestCreated";
 import PaymentFailed from "./pages/PaymentFailed";
-import Success from "./pages/Success"; 
+import Success from "./pages/success"; 
 import Ticket from "./pages/Ticket";
 import TicketSuccess from "./pages/TicketSuccess";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -57,7 +57,7 @@ function AppContent() {
         <Route path="/signup" element={<Register />} />
         <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
-        <Route path="/booking-success" element={<BookingSuccess />} />
+        
         <Route path="/booking-success" element={<Success />} />
 
         {/* TICKETS */}
@@ -85,3 +85,4 @@ function AppContent() {
     </>
   );
 }
+
