@@ -351,10 +351,22 @@ export default function FooterWithFaq() {
             </div>
           </div>
         </div>
-
+        {/* LEGAL BUSINESS INFO (Cashfree Requirement) */}
+        <div
+          style={{
+            textAlign: "center",
+            fontSize: 13,
+            color: "#6b7280",
+            marginTop: 10,
+            marginBottom: 10,
+          }}
+        >
+          Legal Business Name: <strong>HARIKANTH KAMESH</strong><br />
+          
+        </div>
         {/* BOTTOM BAR */}
         <div style={bottomBar}>
-          © 2025 Timebus Technologies Pvt. Ltd. •
+          © 2025 HARIKANTH KAMESH •
           <Link to="/privacy-policy" style={bottomLink}>
             {" "}
             Privacy{" "}
