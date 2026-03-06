@@ -149,7 +149,7 @@ export default function PassengerInfo() {
 
   const applyCoupon = () => {
     if (coupon === "TIMEBUS50") {
-      setDiscount(50);
+      setDiscount(110.25);
       setCouponMsg("Coupon applied successfully");
     } else {
       setDiscount(0);
@@ -538,4 +538,5 @@ const calculateDuration = (dep, arr) => {
     </div>
   );
 }
+
 
