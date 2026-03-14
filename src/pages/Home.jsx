@@ -22,7 +22,6 @@ import "./TimeBusBanner.css";
 import peopleIllustration from "../assets/people-illustration.png";
 export default function Home() {
   const navigate = useNavigate();
-  const API = import.meta.env.VITE_API_URL;
   const today = new Date().toISOString().split("T")[0];
   const [loading, setLoading] = useState(false);
   const [rotating, setRotating] = useState(false);
@@ -70,13 +69,22 @@ const formatDisplayDate = (value) => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const res = await fetch(`${API}/api/cities`);
+        const res = await fetch("http://localhost:5000/api/cities");
         const data = await res.json();
         const cityArray = Array.isArray(data)
-          ? data
-          : Array.isArray(data.cities)
-          ? data.cities
-          : [];
+  ? data
+  : Array.isArray(data.cities)
+  ? data.cities
+  : [];
+
+// SORT ALPHABETICALLY
+const sortedCities = cityArray.sort((a, b) =>
+  a.name.localeCompare(b.name)
+);
+
+setCities(sortedCities);
+setFilteredFromCities(sortedCities);
+setFilteredToCities(sortedCities);
         setCities(cityArray);
         setFilteredFromCities(cityArray);
         setFilteredToCities(cityArray);
@@ -106,24 +114,32 @@ const formatDisplayDate = (value) => {
   /* ================= FILTER ================= */
 
   const filterFromCities = (value) => {
-    setFromText(value);
-    setFrom(null);
-    setFilteredFromCities(
-      cities.filter((c) =>
-        c.name.toLowerCase().includes(value.toLowerCase())
-      )
-    );
-  };
+  setFromText(value);
+  setFrom(null);
+
+  const filtered = cities
+    .filter((c) =>
+      c.name.toLowerCase().includes(value.toLowerCase())
+    )
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  setFilteredFromCities(filtered);
+};
 
   const filterToCities = (value) => {
-    setToText(value);
-    setTo(null);
-    setFilteredToCities(
-      cities.filter((c) =>
-        c.name.toLowerCase().includes(value.toLowerCase())
-      )
-    );
-  };
+  setToText(value);
+  setTo(null);
+
+  const search = value.toLowerCase();
+
+  const filtered = cities
+  .filter((c) =>
+    c.name.toLowerCase().startsWith(search)
+  )
+  .slice(0, 20);
+
+  setFilteredToCities(filtered);
+};
 
   /* ================= SWAP ================= */
 
@@ -156,7 +172,7 @@ const formatDisplayDate = (value) => {
     try {
       setLoading(true);
 
-      const response = await fetch(`${API}/search`, {
+      const response = await fetch("http://localhost:5000/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -284,23 +300,33 @@ const TimeBusBanner = () => {
                   style={input}
                   placeholder="From"
                   value={fromText}
-                  onFocus={() => setOpenFrom(true)}
+                  onFocus={() => {
+  setFilteredFromCities(cities);
+  setOpenFrom(true);
+}}
                   onChange={(e) => filterFromCities(e.target.value)}
                 />
                 {openFrom && (
                   <div style={dropdown}>
-                    {filteredFromCities.map((city) => (
+                    {filteredFromCities.slice(0, 20).map((city) => (
                       <div
-                        key={city.id}
-                        style={option}
-                        onClick={() => {
-                          setFrom(city);
-                          setFromText(city.name);
-                          setOpenFrom(false);
-                        }}
-                      >
-                        {city.name}
-                      </div>
+  key={city.id}
+  style={option}
+  onMouseEnter={(e) =>
+    (e.target.style.background = "#f1f5f9")
+  }
+  onMouseLeave={(e) =>
+    (e.target.style.background = "#fff")
+  }
+  onClick={() => {
+    setFrom(city);
+    setFromText(city.name);
+    setOpenFrom(false);
+  }}
+>
+  <FaMapMarkerAlt style={{ marginRight: 8, color: "#2563eb" }} />
+  {city.name}
+</div>
                     ))}
                   </div>
                 )}
@@ -325,23 +351,33 @@ const TimeBusBanner = () => {
                   style={input}
                   placeholder="To"
                   value={toText}
-                  onFocus={() => setOpenTo(true)}
+                  onFocus={() => {
+  setFilteredToCities(cities);
+  setOpenTo(true);
+}}
                   onChange={(e) => filterToCities(e.target.value)}
                 />
                 {openTo && (
                   <div style={dropdown}>
-                    {filteredToCities.map((city) => (
+                    {filteredToCities.slice(0, 20).map((city) => (
                       <div
-                        key={city.id}
-                        style={option}
-                        onClick={() => {
-                          setTo(city);
-                          setToText(city.name);
-                          setOpenTo(false);
-                        }}
-                      >
-                        {city.name}
-                      </div>
+  key={city.id}
+  style={option}
+  onMouseEnter={(e) =>
+    (e.target.style.background = "#f1f5f9")
+  }
+  onMouseLeave={(e) =>
+    (e.target.style.background = "#fff")
+  }
+  onClick={() => {
+    setTo(city);
+    setToText(city.name);
+    setOpenTo(false);
+  }}
+>
+  <FaMapMarkerAlt style={{ marginRight: 8, color: "#2563eb" }} />
+  {city.name}
+</div>
                     ))}
                   </div>
                 )}
@@ -671,12 +707,15 @@ const dropdown = {
   maxHeight: 220,
   overflowY: "auto",
   zIndex: 99,
-  boxShadow: "0 10px 30px rgba(0,0,0,0.1)"
+  boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+  animation: "dropdownFade 0.25s ease"
 };
 
 const option = {
   padding: "12px 16px",
-  cursor: "pointer"
+  cursor: "pointer",
+  borderBottom: "1px solid #f1f5f9",
+  transition: "all 0.2s ease"
 };
 
 const pillWrapper = {
@@ -842,7 +881,6 @@ const aboutText = {
   color: "#475569",
   marginBottom: "16px"
 };
-
 
 
 
