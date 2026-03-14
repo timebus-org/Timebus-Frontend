@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import "./PassengerInfo.css";
-const API = import.meta.env.VITE_API_URL;
+
 export default function PassengerInfo() {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -21,7 +21,7 @@ export default function PassengerInfo() {
     seatFare,
     gst,
   } = state;
-
+const [submitted, setSubmitted] = useState(false);
   const normalizedSeats = selectedSeats || [];
   const safeBoarding = boardingPoint || { location: "", time: "", bpId: 0 };
   const safeDropping = droppingPoint || { location: "", time: "", bpId: 0 };
@@ -42,11 +42,15 @@ export default function PassengerInfo() {
       errors: {},
     }))
   );
-
+const capitalizeName = (name) => {
+  return name
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+};
   const handlePassengerChange = (index, field, value) => {
     const copy = [...passengers];
 
-    if (typeof value === "string") value = value.trim();
+    if (typeof value === "string") value = value.replace(/\s+/g, " ");
 
     if (field === "age") value = value.replace(/\D/g, "");
 
@@ -59,8 +63,10 @@ export default function PassengerInfo() {
       value = value.replace(/\s/g, "").toUpperCase();
       const idType = copy[index].idType;
 
-      if (idType === "Aadhaar")
-        value = value.replace(/\D/g, "").slice(0, 12);
+      if (idType === "Aadhaar") {
+  value = value.replace(/\D/g, "").slice(0, 12);
+  value = value.replace(/(.{4})/g, "$1 ").trim();
+}
 
       else if (idType === "Voter ID")
         value = value.replace(/[^A-Z0-9]/g, "").slice(0, 12);
@@ -83,8 +89,8 @@ export default function PassengerInfo() {
 
     if (!p.title) errors.title = "Required";
 
-    if (!p.name || !/^[A-Za-z ]{2,}$/.test(p.name))
-      errors.name = "Invalid name";
+    if (!p.name || !/^[A-Za-z]+([ '-][A-Za-z]+)*$/.test(p.name))
+  errors.name = "Invalid name";
 
     const ageNum = Number(p.age);
     if (!ageNum || ageNum < 1 || ageNum > 120)
@@ -96,8 +102,8 @@ export default function PassengerInfo() {
     if (!p.idNumber) {
       errors.idNumber = "Required";
     } else {
-      if (p.idType === "Aadhaar" && !/^\d{12}$/.test(p.idNumber))
-        errors.idNumber = "Aadhaar must be exactly 12 digits";
+      if (p.idType === "Aadhaar" && !/^\d{12}$/.test(p.idNumber.replace(/\s/g, "")))
+  errors.idNumber = "Aadhaar must be exactly 12 digits";
 
       else if (p.idType === "Voter ID" && !/^[A-Z]{3}[0-9]{7}$/.test(p.idNumber))
         errors.idNumber = "Invalid Voter ID";
@@ -148,7 +154,7 @@ export default function PassengerInfo() {
   const [couponMsg, setCouponMsg] = useState("");
 
   const applyCoupon = () => {
-    if (coupon === "TIMEBUS100") {
+    if (coupon === "TIMEBUS50") {
       setDiscount(109.25);
       setCouponMsg("Coupon applied successfully");
     } else {
@@ -230,10 +236,12 @@ const calculateDuration = (dep, arr) => {
 
   /* ===== PAYMENT ===== */
   const handleContinue = async () => {
-    if (!isAllPassengersValid || !isContactValid) {
-      alert("Fill all passenger and contact details correctly.");
-      return;
-    }
+    setSubmitted(true);
+
+if (!isAllPassengersValid || !isContactValid) {
+  alert("Fill all passenger and contact details correctly.");
+  return;
+}
 
     if (!passengers.some((p) => p.primary)) {
       passengers[0].primary = true;
@@ -264,7 +272,7 @@ const calculateDuration = (dep, arr) => {
       };
 
       const res = await axios.post(
-        `${API}/api/block-ticket`,
+        "http://localhost:5000/api/block-ticket",
         blockPayload
       );
 
@@ -363,7 +371,7 @@ const calculateDuration = (dep, arr) => {
               </div>
               <div className="tb-form-grid">
                 <select
-                  className={p.errors.title ? "error" : ""}
+                  className={submitted && p.errors.title ? "error" : ""}
                   value={p.title}
                   onChange={(e) => handlePassengerChange(i, "title", e.target.value)}
                 >
@@ -375,22 +383,30 @@ const calculateDuration = (dep, arr) => {
                 </select>
 
                 <input
-                  placeholder="Full Name"
-                  className={p.errors.name ? "error" : ""}
-                  value={p.name}
-                  onChange={(e) => handlePassengerChange(i, "name", e.target.value)}
-                />
+  placeholder="Full Name"
+  className={submitted && p.errors.name ? "error" : ""}
+  value={p.name}
+  onChange={(e) =>
+    handlePassengerChange(
+      i,
+      "name",
+      capitalizeName(
+        e.target.value.replace(/[^A-Za-z\s'-]/g, "")
+      )
+    )
+  }
+/>
 
                 <input
-                  type="number"
+                  inputMode="numeric"
                   placeholder="Age"
-                  className={p.errors.age ? "error" : ""}
+                  className={submitted && p.errors.age ? "error" : ""}
                   value={p.age}
                   onChange={(e) => handlePassengerChange(i, "age", e.target.value)}
                 />
 
                 <select
-                  className={p.errors.gender ? "error" : ""}
+                  className={submitted && p.errors.gender ? "error" : ""}
                   value={p.gender}
                   onChange={(e) => handlePassengerChange(i, "gender", e.target.value)}
                 >
@@ -401,7 +417,7 @@ const calculateDuration = (dep, arr) => {
                 </select>
 
                 <select
-                  className={p.errors.idType ? "error" : ""}
+                  className={submitted && p.errors.idType ? "error" : ""}
                   value={p.idType}
                   onChange={(e) => handlePassengerChange(i, "idType", e.target.value)}
                 >
@@ -413,14 +429,16 @@ const calculateDuration = (dep, arr) => {
                 </select>
 
                 <input
-                  placeholder="ID Number"
-                  className={p.errors.idNumber ? "error" : ""}
-                  value={p.idNumber}
-                  onChange={(e) => handlePassengerChange(i, "idNumber", e.target.value)}
-                />
+  placeholder="ID Number"
+  className={submitted && p.errors.idNumber ? "error" : ""}
+  value={p.idNumber}
+  onChange={(e) =>
+    handlePassengerChange(i, "idNumber", e.target.value.toUpperCase())
+  }
+/>
 
                 <select
-                  className={p.errors.bookingType ? "error" : ""}
+                  className={submitted && p.errors.bookingType ? "error" : ""}
                   value={p.bookingType}
                   onChange={(e) =>
                     handlePassengerChange(i, "bookingType", e.target.value)
@@ -449,7 +467,7 @@ const calculateDuration = (dep, arr) => {
 
                 <textarea
                   placeholder="Address"
-                  className={p.errors.address ? "error" : ""}
+                  className={submitted && p.errors.address ? "error" : ""}
                   value={p.address}
                   onChange={(e) => handlePassengerChange(i, "address", e.target.value)}
                 />
@@ -526,10 +544,9 @@ const calculateDuration = (dep, arr) => {
             <p className="tb-trust">🔒 Secure PCI-DSS payments</p>
 
             <button
-              className="tb-primary-btn"
-              disabled={!isAllPassengersValid || !isContactValid}
-              onClick={handleContinue}
-            >
+  className="tb-primary-btn"
+  onClick={handleContinue}
+>
               Pay ₹{finalAmount}
             </button>
           </div>
@@ -538,6 +555,3 @@ const calculateDuration = (dep, arr) => {
     </div>
   );
 }
-
-
-
