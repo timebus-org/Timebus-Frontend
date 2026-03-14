@@ -272,9 +272,10 @@ if (!isAllPassengersValid || !isContactValid) {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/api/block-ticket",
-        blockPayload
-      );
+  "https://timebus-backend.onrender.com/api/block-ticket",
+  blockPayload
+);
+
 
       if (!res.data.success) {
         alert("Seat blocking failed");
