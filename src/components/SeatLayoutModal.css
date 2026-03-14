@@ -705,33 +705,23 @@ transform:scale(0.98);
 /* disabled state */
 
 .continue-btn:disabled{
-
-background:#d6d6d
-
+background:#d6d6d6;
 cursor:not-allowed;
-
 box-shadow:none;
-
-}.seat-pro.sleeper{
-
+}
+.seat-pro.sleeper{
 border-radius:16px;
-
 padding-top:6px;
+}
 
 .seat-pro.sleeper{
-
 border-radius:10px;
-
 background:#ffffff;
-
 border:1px solid #d6dbe3;
-
 box-shadow:
 0 4px 8px rgba(0,0,0,0.08),
 inset 0 -4px 0 rgba(0,0,0,0.05);
-
 padding-top:6px;
-
 }.seat-pro.sleeper::before{
 
 content:"";
