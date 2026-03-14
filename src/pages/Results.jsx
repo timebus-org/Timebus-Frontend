@@ -300,9 +300,7 @@ const getCount = (filterLogic) => {
   return (
     <div className="results-wrapper">
 
-      <div className="modify-search-wrapper">
-  <ResultSearchHeader from={from} to={to} date={date} />
-</div>
+      <ResultSearchHeader from={from} to={to} date={date} />
 
       
 
