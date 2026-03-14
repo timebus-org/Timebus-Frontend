@@ -90,12 +90,7 @@
     transform: translateY(0) scale(1);
   }
 }
-@keyframes childIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+
 
 /* OPTIONAL: stagger children */
 .page-stagger > * {
@@ -109,7 +104,12 @@
 .page-stagger > *:nth-child(3) { animation-delay: 0.3s; }
 .page-stagger > *:nth-child(4) { animation-delay: 0.4s; }
 
-
+@keyframes childIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 /* ================= MOBILE RESPONSIVE ================= */
 
 @media (max-width: 768px) {
@@ -153,4 +153,14 @@
     display: none !important;
   }
 
+}
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
