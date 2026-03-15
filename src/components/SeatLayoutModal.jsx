@@ -43,7 +43,7 @@ try{
 setLoading(true);
 
 const res = await axios.get(
-`http://localhost:5000/api/trips/trip-details/${bus.id}`
+`${import.meta.env.VITE_API_URL}/api/trips/trip-details/${bus.id}`
 );
 
 if(!mounted) return;
