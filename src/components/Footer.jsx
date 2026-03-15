@@ -351,11 +351,7 @@ export default function FooterWithFaq() {
             </div>
           </div>
         </div>
-        {/* LEGAL BUSINESS INFO (Cashfree Requirement) */}
         
-          
-        </div>
-        {/* BOTTOM BAR */}
         <div style={bottomBar}>
           © 2025 TIMEBUS TRAVELS •
           <Link to="/privacy-policy" style={bottomLink}>
