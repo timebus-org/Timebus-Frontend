@@ -168,7 +168,8 @@ const capitalizeName = (name) => {
   const baseGST = Number(gst || 0);
   const subTotal = baseFare + baseGST - discount;
 
-  const finalAmount = subTotal > 0 ? subTotal : 0;
+const finalAmount =
+  subTotal > 0 ? Number(subTotal.toFixed(2)) : 0;
 
   /* 🔥 SAFE TIME FORMATTER */
   const formatTime = (time) => {
