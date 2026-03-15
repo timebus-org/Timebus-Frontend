@@ -294,16 +294,18 @@ const TimeBusBanner = () => {
               <div style={field} ref={fromRef} className="field-mobile">
 
                 <FaBus />
-                <input
-                  style={input}
-                  placeholder="From"
-                  value={fromText}
-                  onFocus={() => {
-  setFilteredFromCities(cities);
-  setOpenFrom(true);
-}}
-                  onChange={(e) => filterFromCities(e.target.value)}
-                />
+<input
+  style={input}
+  placeholder="From"
+  name="bus_from_city"
+  autoComplete="new-password"
+  value={fromText}
+  onFocus={() => {
+    setFilteredFromCities(cities);
+    setOpenFrom(true);
+  }}
+  onChange={(e) => filterFromCities(e.target.value)}
+/>
                 {openFrom && (
                   <div style={dropdown}>
                     {filteredFromCities.slice(0, 20).map((city) => (
@@ -346,15 +348,17 @@ const TimeBusBanner = () => {
               <div style={field} ref={toRef}>
                 <FaBus />
                 <input
-                  style={input}
-                  placeholder="To"
-                  value={toText}
-                  onFocus={() => {
-  setFilteredToCities(cities);
-  setOpenTo(true);
-}}
-                  onChange={(e) => filterToCities(e.target.value)}
-                />
+  style={input}
+  placeholder="To"
+  name="bus_to_city"
+  autoComplete="new-password"
+  value={toText}
+  onFocus={() => {
+    setFilteredToCities(cities);
+    setOpenTo(true);
+  }}
+  onChange={(e) => filterToCities(e.target.value)}
+/>
                 {openTo && (
                   <div style={dropdown}>
                     {filteredToCities.slice(0, 20).map((city) => (
@@ -879,7 +883,6 @@ const aboutText = {
   color: "#475569",
   marginBottom: "16px"
 };
-
 
 
 
