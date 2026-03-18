@@ -4,9 +4,10 @@
   background: radial-gradient(circle at top, #e8f0ff 0%, #dbe7ff 50%, #cddcff 100%);
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* ✅ FIXED (was center) */
+  align-items: flex-start;
   padding: 20px;
   font-family: "Inter", sans-serif;
+  overflow-y: auto; /* ✅ allows scroll */
 }
 
 /* ================= MAIN CARD ================= */
@@ -18,13 +19,7 @@
   display: flex;
   border-radius: 22px;
   box-shadow: 0 20px 50px rgba(13, 110, 253, 0.15);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.booking-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 30px 70px rgba(13, 110, 253, 0.25);
+  overflow: visible; /* ✅ FIX: was hidden */
 }
 
 /* ================= LEFT PANEL ================= */
@@ -37,6 +32,7 @@
   gap: 12px;
 }
 
+/* ================= TITLE ================= */
 .booking-left h2 {
   font-size: 26px;
   font-weight: 800;
@@ -47,7 +43,7 @@
   gap: 10px;
 }
 
-/* ================= TRIP TOGGLE ================= */
+/* ================= TOGGLE ================= */
 .trip-toggle {
   display: flex;
   gap: 14px;
@@ -136,8 +132,7 @@
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
-  position: sticky; /* ✅ ensures visibility */
-  bottom: 10px;
+  flex-shrink: 0; /* ✅ prevents disappearing */
 }
 
 /* ================= RIGHT ================= */
