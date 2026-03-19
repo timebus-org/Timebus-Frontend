@@ -32,7 +32,8 @@ export default function Home() {
   const [toText, setToText] = useState("");
   const [date, setDate] = useState(today);
   const [recentSearches, setRecentSearches] = useState([]);
-
+  const [activeFromIndex, setActiveFromIndex] =      useState(-1);
+const [activeToIndex, setActiveToIndex] = useState(-1);
   const [openFrom, setOpenFrom] = useState(false);
   const [openTo, setOpenTo] = useState(false);
 
@@ -69,7 +70,7 @@ const formatDisplayDate = (value) => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/cities`);
+        const res = await fetch("http://localhost:5000/api/cities");
         const data = await res.json();
         const cityArray = Array.isArray(data)
   ? data
@@ -78,9 +79,25 @@ const formatDisplayDate = (value) => {
   : [];
 
 // SORT ALPHABETICALLY
-const sortedCities = cityArray.sort((a, b) =>
+const southStates = [
+  "Tamil Nadu",
+  "Karnataka",
+  "Kerala",
+  "Andhra Pradesh",
+  "Telangana"
+];
+
+const filteredSouthCities = cityArray.filter(city =>
+  southStates.includes(city.state) // make sure backend sends "state"
+);
+
+const sortedCities = filteredSouthCities.sort((a, b) =>
   a.name.localeCompare(b.name)
 );
+
+setCities(sortedCities);
+setFilteredFromCities(sortedCities);
+setFilteredToCities(sortedCities);
 
 setCities(sortedCities);
 setFilteredFromCities(sortedCities);
@@ -110,35 +127,127 @@ setFilteredToCities(sortedCities);
   }, []);
 
   /* ================= FILTER ================= */
+// 🔥 Define once at top (outside functions)
+const popularCityNames = [
+  "Chennai",
+  "Bangalore",
+  "Hyderabad",
+  "Coimbatore",
+  "Madurai",
+  "Trichy",
+  "Salem",
+  "Erode",
+  "Tirunelveli",
+  "Vellore",
+  "Mysore",
+  "Mangalore",
+  "Vijayawada",
+  "Visakhapatnam",
+  "Kochi",
+  "Trivandrum"
+];
 
-  const filterFromCities = (value) => {
-  setFromText(value);
-  setFrom(null);
-
-  const filtered = cities
-    .filter((c) =>
-      c.name.toLowerCase().includes(value.toLowerCase())
-    )
+// 🔥 Helper → get only popular cities sorted A-Z
+const getPopularCities = () => {
+  return cities
+    .filter(c => popularCityNames.includes(c.name))
     .sort((a, b) => a.name.localeCompare(b.name));
-
-  setFilteredFromCities(filtered);
 };
 
-  const filterToCities = (value) => {
-  setToText(value);
-  setTo(null);
+
+/* ================= FROM FILTER ================= */
+const filterFromCities = (value) => {
+  setFromText(value);
+  setActiveFromIndex(-1);
 
   const search = value.toLowerCase();
 
-  const filtered = cities
-  .filter((c) =>
-    c.name.toLowerCase().startsWith(search)
-  )
-  .slice(0, 20);
+  // 🔥 Only popular cities
+  const baseCities = getPopularCities();
 
-  setFilteredToCities(filtered);
+  // 🔥 Filter + alphabetical
+  const filtered = baseCities.filter(c =>
+    c.name.toLowerCase().includes(search)
+  );
+
+  setFilteredFromCities(filtered);
+
+  // ✅ Exact match auto-select
+  const exactMatch = baseCities.find(
+    c => c.name.toLowerCase() === search
+  );
+
+  setFrom(exactMatch || null);
 };
 
+
+/* ================= TO FILTER ================= */
+const filterToCities = (value) => {
+  setToText(value);
+  setActiveToIndex(-1);
+
+  const search = value.toLowerCase();
+
+  // 🔥 Only popular cities
+  const baseCities = getPopularCities();
+
+  const filtered = baseCities.filter(c =>
+    c.name.toLowerCase().includes(search)
+  );
+
+  setFilteredToCities(filtered);
+
+  // ✅ Exact match auto-select
+  const exactMatch = baseCities.find(
+    c => c.name.toLowerCase() === search
+  );
+
+  setTo(exactMatch || null);
+};
+/* ================= KEYBOARD NAVIGATION ================= */
+const handleKeyDown = (e, type) => {
+  const isFrom = type === "from";
+
+  const list = isFrom ? filteredFromCities : filteredToCities;
+  const activeIndex = isFrom ? activeFromIndex : activeToIndex;
+  const setIndex = isFrom ? setActiveFromIndex : setActiveToIndex;
+
+  // ⬇ DOWN
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    setIndex((prev) => (prev < list.length - 1 ? prev + 1 : 0));
+  }
+
+  // ⬆ UP
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    setIndex((prev) => (prev > 0 ? prev - 1 : list.length - 1));
+  }
+
+  // ⏎ ENTER
+  if (e.key === "Enter" && activeIndex >= 0) {
+    e.preventDefault();
+    const selectedCity = list[activeIndex];
+
+    if (isFrom) {
+      setFrom(selectedCity);
+      setFromText(selectedCity.name);
+      setOpenFrom(false);
+
+      // 🔥 Smooth move to TO
+      setTimeout(() => {
+        toRef.current?.querySelector("input")?.focus();
+        setFilteredToCities(getPopularCities());
+        setOpenTo(true);
+      }, 100);
+
+    } else {
+      setTo(selectedCity);
+      setToText(selectedCity.name);
+      setOpenTo(false);
+    }
+  }
+};
   /* ================= SWAP ================= */
 
   const swapCities = () => {
@@ -170,7 +279,7 @@ setFilteredToCities(sortedCities);
     try {
       setLoading(true);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/search`, {
+      const response = await fetch("http://localhost:5000/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -294,35 +403,53 @@ const TimeBusBanner = () => {
               <div style={field} ref={fromRef} className="field-mobile">
 
                 <FaBus />
-<input
-  style={input}
-  placeholder="From"
-  name="bus_from_city"
-  autoComplete="new-password"
-  value={fromText}
-  onFocus={() => {
-    setFilteredFromCities(cities);
-    setOpenFrom(true);
-  }}
-  onChange={(e) => filterFromCities(e.target.value)}
-/>
+                <input
+                  style={input}
+                  placeholder="From"
+                  value={fromText}
+                  onFocus={() => {
+  const popular = cities
+    .filter((c) => popularCityNames.includes(c.name))
+    .sort((a, b) => a.name.localeCompare(b.name));
+   
+  setFilteredFromCities(popular);
+  setActiveFromIndex(-1);
+setOpenFrom(true);
+}}
+                  onChange={(e) => filterFromCities(e.target.value)}
+onKeyDown={(e) => handleKeyDown(e, "from")}
+                />
                 {openFrom && (
                   <div style={dropdown}>
-                    {filteredFromCities.slice(0, 20).map((city) => (
+                    {filteredFromCities.slice(0, 20).map((city, index) => (
                       <div
   key={city.id}
-  style={option}
+  style={{
+  ...option,
+  backgroundColor:
+    index === activeFromIndex ? "#2563eb" : "#fff",
+  color:
+    index === activeFromIndex ? "#fff" : "#000"
+}}
   onMouseEnter={(e) =>
     (e.target.style.background = "#f1f5f9")
   }
   onMouseLeave={(e) =>
     (e.target.style.background = "#fff")
   }
-  onClick={() => {
-    setFrom(city);
-    setFromText(city.name);
-    setOpenFrom(false);
-  }}
+onClick={() => {
+  setFrom(city);
+  setFromText(city.name);
+  setOpenFrom(false);
+
+  // 👇 AUTO OPEN TO FIELD
+  setTimeout(() => {
+    toRef.current?.querySelector("input")?.focus();
+    setFilteredToCities(cities);
+    setActiveToIndex(-1);
+setOpenTo(true);
+  }, 100);
+}}
 >
   <FaMapMarkerAlt style={{ marginRight: 8, color: "#2563eb" }} />
   {city.name}
@@ -348,24 +475,32 @@ const TimeBusBanner = () => {
               <div style={field} ref={toRef}>
                 <FaBus />
                 <input
-  style={input}
-  placeholder="To"
-  name="bus_to_city"
-  autoComplete="new-password"
-  value={toText}
-  onFocus={() => {
-    setFilteredToCities(cities);
-    setOpenTo(true);
-  }}
-  onChange={(e) => filterToCities(e.target.value)}
-/>
+                  style={input}
+                  placeholder="To"
+                  value={toText}
+                  onFocus={() => {
+  const popular = cities
+    .filter((c) => popularCityNames.includes(c.name))
+    .sort((a, b) => a.name.localeCompare(b.name));
+   
+  setFilteredToCities(popular);
+  setOpenTo(true);
+}}
+                  onChange={(e) => filterToCities(e.target.value)}
+onKeyDown={(e) => handleKeyDown(e, "to")}
+                />
                 {openTo && (
                   <div style={dropdown}>
-                    {filteredToCities.slice(0, 20).map((city) => (
+                    {filteredToCities.slice(0, 20).map((city, index) => (
                       <div
   key={city.id}
-  style={option}
-  onMouseEnter={(e) =>
+style={{
+  ...option,
+  backgroundColor:
+    index === activeToIndex ? "#2563eb" : "#fff",
+  color:
+    index === activeToIndex ? "#fff" : "#000"
+}}  onMouseEnter={(e) =>
     (e.target.style.background = "#f1f5f9")
   }
   onMouseLeave={(e) =>
@@ -883,6 +1018,7 @@ const aboutText = {
   color: "#475569",
   marginBottom: "16px"
 };
+
 
 
 
