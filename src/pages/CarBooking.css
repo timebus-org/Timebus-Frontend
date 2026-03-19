@@ -4,17 +4,8 @@
   background: radial-gradient(circle at top, #e8f0ff 0%, #dbe7ff 50%, #cddcff 100%);
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding: 40px 0;
+align-items: flex-start;  padding: 40px 0;
   font-family: "Inter", sans-serif;
-}
-.booking-bg {
-  overflow-y: auto;
-}
-@media (max-height: 500px) {
-  .booking-bg {
-    align-items: flex-start;
-  }
 }
 
 /* ================= MAIN CARD ================= */
@@ -230,33 +221,8 @@
 }
 
 /* ================= RESPONSIVE ================= */
-@media (max-width: 900px) {
-  .booking-card {
-    flex-direction: column;
-  }
 
-  .booking-right {
-    padding: 25px 0;
-  }
 
-  .booking-right img {
-    width: 65%;
-  }
-
-  .booking-left {
-    padding: 28px;
-  }
-}
-
-@media (max-width: 480px) {
-  .booking-left h2 {
-    font-size: 22px;
-  }
-
-  .search-btn {
-    font-size: 15px;
-  }
-}
 /* ================= TIME INPUT MATCH DATE ================= */
 .input-box input[type="time"] {
   width: 100%;
