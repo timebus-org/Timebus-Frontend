@@ -5,178 +5,234 @@ import { supabase } from "../supabaseClient";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [usePassword, setUsePassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ Grab redirect info from location OR localStorage
-  const redirectTo = location.state?.redirectTo || localStorage.getItem("redirectTo") || "/";
-  const cabData = location.state?.cabData
-    || JSON.parse(localStorage.getItem("cabData")) || null;
+  const redirectTo =
+    location.state?.redirectTo ||
+    localStorage.getItem("redirectTo") ||
+    "/";
 
+  const cabData =
+    location.state?.cabData ||
+    JSON.parse(localStorage.getItem("cabData")) ||
+    null;
+
+  /* ================= AUTO LOGIN ================= */
   useEffect(() => {
-    // Store redirect info in localStorage to survive reloads
-    if (location.state?.redirectTo && location.state?.cabData) {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        handleRedirect();
+      }
+    };
+
+    checkSession();
+  }, []);
+
+  /* ================= STORE DATA ================= */
+  useEffect(() => {
+    if (location.state?.redirectTo) {
       localStorage.setItem("redirectTo", location.state.redirectTo);
-      localStorage.setItem("cabData", JSON.stringify(location.state.cabData));
+    }
+
+    if (location.state?.cabData) {
+      localStorage.setItem(
+        "cabData",
+        JSON.stringify(location.state.cabData)
+      );
     }
   }, [location.state]);
 
-  /* 🔐 PASSWORD LOGIN */
-  const loginWithPassword = async (e) => {
-    e.preventDefault();
-    if (loading) return;
+  /* ================= SAVE BOOKING ================= */
+  const saveBooking = async (data) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    setLoading(true);
-    setError("");
+    if (!user || !data) return;
 
-    const { data, error: loginError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    await supabase.from("bookings").insert([
+      {
+        user_id: user.id,
+        pickup: data.pickup,
+        drop_location: data.drop,
+        date: data.date,
+      },
+    ]);
+  };
 
-    setLoading(false);
+  /* ================= REDIRECT ================= */
+  const handleRedirect = async () => {
+    const storedRedirect =
+      localStorage.getItem("redirectTo") || "/";
 
-    if (loginError) {
-      setError("Account not found. Please sign up.");
-      setTimeout(() => navigate("/signup"), 1200);
-      return;
-    }
+    const storedCabData = JSON.parse(
+      localStorage.getItem("cabData")
+    );
 
-    // ✅ Clear redirect info from localStorage
     localStorage.removeItem("redirectTo");
     localStorage.removeItem("cabData");
 
-    // ✅ Navigate to bookingSummary if cabData exists
-    if (cabData) {
-      navigate(redirectTo, { state: cabData });
+    if (storedCabData) {
+      await saveBooking(storedCabData);
+      navigate(storedRedirect, { state: storedCabData });
     } else {
-      navigate(redirectTo);
+      navigate(storedRedirect);
     }
   };
 
-  /* 🔐 MAGIC LINK LOGIN */
-  const sendOtp = async (e) => {
-    e.preventDefault();
-    if (loading) return;
-
+  /* ================= GOOGLE LOGIN ================= */
+  const handleGoogleLogin = async () => {
     setLoading(true);
-    setError("");
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
       options: {
-        emailRedirectTo: `${window.location.origin}/bookingSummary`, // handle redirect there
+        redirectTo: `${window.location.origin}/login`,
       },
     });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  /* ================= PASSWORD LOGIN ================= */
+  const loginWithPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
     setLoading(false);
 
     if (error) {
-      setError(error.message);
+      setError("Invalid credentials");
       return;
     }
 
-    setSent(true);
+    handleRedirect();
   };
 
-  const getEmailProviderUrl = () => {
-    const domain = email.split("@")[1] || "";
-    if (domain.includes("gmail")) return "https://mail.google.com";
-    if (domain.includes("outlook") || domain.includes("hotmail"))
-      return "https://outlook.live.com";
-    if (domain.includes("yahoo")) return "https://mail.yahoo.com";
-    return "mailto:";
-  };
-
+  /* ================= UI ================= */
   return (
-    <div className="auth-wrapper">
-      <div className="auth-card">
+    <div style={styles.wrapper}>
+      <div style={styles.card}>
         <h2>Welcome Back</h2>
-
-        <p className="subtitle">
-          {usePassword
-            ? "Sign in using your password"
-            : "Sign in using a secure email link"}
+        <p style={styles.subtitle}>
+          Login to continue 🚀
         </p>
 
-        {!sent || usePassword ? (
-          <form onSubmit={usePassword ? loginWithPassword : sendOtp}>
-            <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+        {/* GOOGLE */}
+        <button
+          onClick={handleGoogleLogin}
+          style={styles.googleBtn}
+        >
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="g"
+            style={{ width: 20 }}
+          />
+          Continue with Google
+        </button>
 
-            {usePassword && (
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            )}
+        <div style={styles.divider}>OR</div>
 
-            {error && <p className="error">{error}</p>}
+        {/* FORM */}
+        <form onSubmit={loginWithPassword}>
+          <input
+            type="email"
+            placeholder="Email"
+            style={styles.input}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-            <button disabled={loading}>
-              {loading
-                ? "Please wait..."
-                : usePassword
-                ? "Sign In"
-                : "Send Login Link"}
-            </button>
-          </form>
-        ) : (
-          <div className="email-sent">
-            <h3>Check your email 📩</h3>
-            <p className="subtitle">We sent a secure login link to</p>
-            <strong>{email}</strong>
+          <input
+            type="password"
+            placeholder="Password"
+            style={styles.input}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-            <a
-              href={getEmailProviderUrl()}
-              target="_blank"
-              rel="noreferrer"
-              className="email-btn"
-            >
-              Go to Email
-            </a>
-          </div>
-        )}
+          {error && <p style={styles.error}>{error}</p>}
 
-        {!sent && (
-          <div className="auth-toggle">
-            <span
-              onClick={() => {
-                setUsePassword(!usePassword);
-                setError("");
-              }}
-            >
-              {usePassword
-                ? "Use email magic link instead"
-                : "Use password instead"}
-            </span>
-          </div>
-        )}
-
-        <p className="switch-auth">
-          Don’t have an account?{" "}
-          <span
-            onClick={() =>
-              navigate("/signup", { state: { redirectTo, cabData } })
-            }
-          >
-            Sign up
-          </span>
-        </p>
+          <button style={styles.primaryBtn}>
+            {loading ? "Loading..." : "Sign In"}
+          </button>
+        </form>
       </div>
     </div>
   );
 }
+
+/* ================= INLINE CSS ================= */
+const styles = {
+  wrapper: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "#f1f5f9",
+  },
+  card: {
+    background: "#fff",
+    padding: 30,
+    borderRadius: 16,
+    width: 350,
+    textAlign: "center",
+    boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+  },
+  subtitle: {
+    color: "#64748b",
+    marginBottom: 20,
+  },
+  googleBtn: {
+    width: "100%",
+    padding: 12,
+    borderRadius: 10,
+    border: "1px solid #ddd",
+    display: "flex",
+    justifyContent: "center",
+    gap: 10,
+    cursor: "pointer",
+    marginBottom: 15,
+  },
+  divider: {
+    margin: "10px 0",
+    color: "#94a3b8",
+  },
+  input: {
+    width: "100%",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 8,
+    border: "1px solid #ddd",
+  },
+  primaryBtn: {
+    width: "100%",
+    padding: 12,
+    background: "#2563eb",
+    color: "#fff",
+    border: "none",
+    borderRadius: 10,
+    cursor: "pointer",
+  },
+  error: {
+    color: "red",
+    fontSize: 12,
+  },
+};
