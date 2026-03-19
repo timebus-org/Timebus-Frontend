@@ -204,33 +204,10 @@ margin-bottom:3px;
 
 /* SLEEPER */
 
-.seat-pro.sleeper{
-
-background:linear-gradient(
-180deg,
-#ffffff,
-#e8f2ff
-);
-
-border-radius:14px;
-
-border:1px solid #cdddf5;
-
-}
-
-.seat-pro.sleeper::before{
-
-content:"";
-
-width:90%;
-height:8px;
-
-background:#d6e2f5;
-
-border-radius:5px;
-
-margin-bottom:4px;
-
+.seat-pro.sleeper {
+  border-radius:14px;
+  background:linear-gradient(180deg,#ffffff,#e8f2ff);
+  border:1px solid #cdddf5;
 }
 
 /* seat number */
@@ -743,12 +720,21 @@ background:#c9d3e1;
 border-radius:4px;
 
 }
+
+.seat-pro.selected,
 .seat-pro.sleeper.selected {
-  background: #2ecc71;
-  border-color: #2ecc71;
-  color: white;
-  box-shadow: 0 4px 10px rgba(46,204,113,0.35);
+  background: #2ecc71 !important;
+  border-color: #2ecc71 !important;
+  color: white !important;
 }
-.seat-pro.sleeper.selected::before {
-  background: #ffffff;
+
+/* 🔥 VERY IMPORTANT — remove gradient */
+.seat-pro.selected,
+.seat-pro.sleeper.selected {
+  background-image: none !important;
+}
+background: linear-gradient(180deg,#ffffff,#eef3fb);
+.seat-pro.sleeper.selected {
+  background: #2ecc71 !important;
+  background-image: none !important;
 }
