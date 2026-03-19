@@ -132,7 +132,7 @@ export default function Login() {
       <div style={styles.card}>
         <h2>Welcome Back</h2>
         <p style={styles.subtitle}>
-          Login to continue 🚀
+          Login to continue 
         </p>
 
         {/* GOOGLE */}
@@ -201,16 +201,19 @@ const styles = {
     marginBottom: 20,
   },
   googleBtn: {
-    width: "100%",
-    padding: 12,
-    borderRadius: 10,
-    border: "1px solid #ddd",
-    display: "flex",
-    justifyContent: "center",
-    gap: 10,
-    cursor: "pointer",
-    marginBottom: 15,
-  },
+  width: "100%",
+  padding: 12,
+  borderRadius: 10,
+  border: "1px solid #ddd",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: 10,
+  cursor: "pointer",
+  marginBottom: 15,
+  backgroundColor: "#ffffff",   // ✅ force white
+  color: "#000",                // optional: better contrast
+},
   divider: {
     margin: "10px 0",
     color: "#94a3b8",
