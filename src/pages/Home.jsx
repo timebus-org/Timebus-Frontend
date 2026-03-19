@@ -70,7 +70,7 @@ const formatDisplayDate = (value) => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/cities");
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/cities`);
         const data = await res.json();
         const cityArray = Array.isArray(data)
   ? data
@@ -279,7 +279,7 @@ const handleKeyDown = (e, type) => {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:5000/search", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
