@@ -4,9 +4,17 @@
   background: radial-gradient(circle at top, #e8f0ff 0%, #dbe7ff 50%, #cddcff 100%);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   padding: 40px 0;
   font-family: "Inter", sans-serif;
+}
+.booking-bg {
+  overflow-y: auto;
+}
+@media (max-height: 500px) {
+  .booking-bg {
+    align-items: flex-start;
+  }
 }
 
 /* ================= MAIN CARD ================= */
