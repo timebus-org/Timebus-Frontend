@@ -234,8 +234,16 @@ export default function CarBooking() {
             </div>
           </div>
 
-          <div className="mobile-search-wrapper">
+          {/* ✅ DESKTOP BUTTON */}
+<div className="desktop-search-btn">
   <button className="search-btn" onClick={handleSearch}>
+    SEARCH CABS
+  </button>
+</div>
+
+{/* ✅ MOBILE FIXED BUTTON */}
+<div className="mobile-fixed-btn">
+  <button onClick={handleSearch}>
     SEARCH CABS
   </button>
 </div>
