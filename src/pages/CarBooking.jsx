@@ -232,13 +232,14 @@ export default function CarBooking() {
                 />
               )}
             </div>
-          </div>
-
-          <div className="mobile-search-wrapper">
+             <div className="mobile-search-wrapper">
   <button className="search-btn" onClick={handleSearch}>
     SEARCH CABS
   </button>
 </div>
+          </div>
+
+          
         </div>
 
         {/* RIGHT */}
