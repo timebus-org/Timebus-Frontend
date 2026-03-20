@@ -14,35 +14,26 @@ export default function Login() {
   const redirectTo =
     location.state?.redirectTo ||
     localStorage.getItem("redirectTo") ||
-    "/dashboard";
+    "/";
 
   const cabData =
     location.state?.cabData ||
     JSON.parse(localStorage.getItem("cabData")) ||
     null;
 
-  /* ================= AUTO LOGIN / HANDLE GOOGLE CALLBACK ================= */
+  /* ================= AUTO LOGIN ================= */
   useEffect(() => {
-    const handleSession = async () => {
-      // Process OAuth callback if there’s a token in URL
-      const { data: { session }, error } =
-        await supabase.auth.getSessionFromUrl({ storeSession: true });
-
-      if (error) {
-        console.log("No OAuth token in URL or error:", error.message);
-      }
-
-      // Check normal session
+    const checkSession = async () => {
       const {
-        data: { session: currentSession },
+        data: { session },
       } = await supabase.auth.getSession();
 
-      if (session || currentSession) {
-        await handleRedirect();
+      if (session) {
+        handleRedirect();
       }
     };
 
-    handleSession();
+    checkSession();
   }, []);
 
   /* ================= STORE DATA ================= */
@@ -79,8 +70,12 @@ export default function Login() {
 
   /* ================= REDIRECT ================= */
   const handleRedirect = async () => {
-    const storedRedirect = localStorage.getItem("redirectTo") || "/dashboard";
-    const storedCabData = JSON.parse(localStorage.getItem("cabData"));
+    const storedRedirect =
+      localStorage.getItem("redirectTo") || "/";
+
+    const storedCabData = JSON.parse(
+      localStorage.getItem("cabData")
+    );
 
     localStorage.removeItem("redirectTo");
     localStorage.removeItem("cabData");
@@ -97,15 +92,10 @@ export default function Login() {
   const handleGoogleLogin = async () => {
     setLoading(true);
 
-    const redirectUrl =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:5173/login"
-        : "https://timebus.in/login"; // This page will handle callback
-
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: redirectUrl,
+        redirectTo: `${window.location.origin}/login`,
       },
     });
 
@@ -120,10 +110,11 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
     setLoading(false);
 
@@ -140,10 +131,15 @@ export default function Login() {
     <div style={styles.wrapper}>
       <div style={styles.card}>
         <h2>Welcome Back</h2>
-        <p style={styles.subtitle}>Login to continue</p>
+        <p style={styles.subtitle}>
+          Login to continue 
+        </p>
 
         {/* GOOGLE */}
-        <button onClick={handleGoogleLogin} style={styles.googleBtn}>
+        <button
+          onClick={handleGoogleLogin}
+          style={styles.googleBtn}
+        >
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             alt="g"
@@ -205,19 +201,19 @@ const styles = {
     marginBottom: 20,
   },
   googleBtn: {
-    width: "100%",
-    padding: 12,
-    borderRadius: 10,
-    border: "1px solid #ddd",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-    cursor: "pointer",
-    marginBottom: 15,
-    backgroundColor: "#ffffff",
-    color: "#000",
-  },
+  width: "100%",
+  padding: 12,
+  borderRadius: 10,
+  border: "1px solid #ddd",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: 10,
+  cursor: "pointer",
+  marginBottom: 15,
+  backgroundColor: "#ffffff",   // ✅ force white
+  color: "#000",                // optional: better contrast
+},
   divider: {
     margin: "10px 0",
     color: "#94a3b8",
