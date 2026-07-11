@@ -451,7 +451,7 @@ setOpenTo(true);
   }, 100);
 }}
 >
-  <FaMapMarkerAlt style={{ marginRight: 8, color: "#2563eb" }} />
+  
   {city.name}
 </div>
                     ))}
@@ -512,7 +512,7 @@ style={{
     setOpenTo(false);
   }}
 >
-  <FaMapMarkerAlt style={{ marginRight: 8, color: "#2563eb" }} />
+  
   {city.name}
 </div>
                     ))}
