@@ -221,6 +221,7 @@ export default function Home() {
         setFrom(selectedCity);
         setFromText(selectedCity.name);
         setOpenFrom(false);
+        setOpenTo(false);
 
         setTimeout(() => {
           toRef.current?.querySelector("input")?.focus();
@@ -228,11 +229,13 @@ export default function Home() {
             getPopularCities().filter((c) => c.id !== selectedCity.id)
           );
           setActiveToIndex(-1);
+          setOpenFrom(false);
           setOpenTo(true);
         }, 100);
       } else {
         setTo(selectedCity);
         setToText(selectedCity.name);
+        setOpenFrom(false);
         setOpenTo(false);
       }
     }
@@ -380,6 +383,7 @@ export default function Home() {
             setFrom(city);
             setFromText(city.name);
             setOpenFrom(false);
+            setOpenTo(false);
 
             setTimeout(() => {
               toRef.current?.querySelector("input")?.focus();
@@ -387,11 +391,13 @@ export default function Home() {
                 getPopularCities().filter((c) => c.id !== city.id)
               );
               setActiveToIndex(-1);
+              setOpenFrom(false);
               setOpenTo(true);
             }, 100);
           } else {
             setTo(city);
             setToText(city.name);
+            setOpenFrom(false);
             setOpenTo(false);
           }
         }}
@@ -429,6 +435,7 @@ export default function Home() {
                           );
                           setFilteredFromCities(popular);
                           setActiveFromIndex(-1);
+                          setOpenTo(false);
                           setOpenFrom(true);
                         }}
                         onChange={(e) => filterFromCities(e.target.value)}
@@ -477,6 +484,7 @@ export default function Home() {
                           );
                           setFilteredToCities(popular);
                           setActiveToIndex(-1);
+                          setOpenFrom(false);
                           setOpenTo(true);
                         }}
                         onChange={(e) => filterToCities(e.target.value)}
@@ -824,27 +832,26 @@ const dropdown = {
   zIndex: 99,
   boxShadow: "0 20px 45px rgba(15,23,42,0.18)",
   border: "1px solid #eef1f6",
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: 4,
-  padding: 10,
+  display: "flex",
+  flexDirection: "column",
+  padding: 6,
   animation: "dropdownFade 0.2s ease"
 };
 
 const option = {
-  padding: "12px 14px",
+  padding: "13px 14px",
   fontSize: 15.5,
   fontWeight: 500,
   cursor: "pointer",
   borderRadius: 10,
   display: "flex",
   alignItems: "center",
-  gap: 8,
+  gap: 10,
+  borderBottom: "1px solid #f1f5f9",
   transition: "background-color 0.15s ease"
 };
 
 const noResults = {
-  gridColumn: "1 / -1",
   padding: "16px",
   textAlign: "center",
   color: "#94a3b8",
